@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  username         String?           @unique
+  password         String
+  name             String
+  phone            String?
+  role             String            @default("owner") // owner, warden, accountant, resident, superadmin
+  status           String            @default("active") // active, inactive, suspended
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  properties       Property[]        @relation("OwnerProperties")
+  staffAssignments StaffAssignment[]
+  tenantProfile    TenantProfile?
+  auditLogs        AuditLog[]
+}
+
+model Property {
+  id               String            @id @default(cuid())
+  name             String
+  code             String?           @unique
+  description      String?
+  address          String
+  city             String
+  state            String?           @default("Tamil Nadu")
+  postalCode       String?
+  type             String            @default("PG") // PG, Hostel
+  gender           String            @default("Co-living") // Boys, Girls, Co-living
+  totalFloors      Int               @default(3)
+  totalRooms       Int               @default(0)
+  totalBeds        Int               @default(0)
+  occupiedBeds     Int               @default(0)
+  status           String            @default("active") // active, inactive, maintenance
+  image            String?
+  contactNumber    String?
+  facilities       String?           // JSON string of amenities
+
+  ownerId          String
+  owner            User              @relation("OwnerProperties", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  floors           Floor[]
+  rooms            Room[]
+  beds             Bed[]
+  staffAssignments StaffAssignment[]
+  tenants          TenantProfile[]
+  payments         Payment[]
+  expenses         Expense[]
+  deposits         SecurityDeposit[]
+  complaints       Complaint[]
+}
+
+model StaffAssignment {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId   String
+  property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  role         String    // warden, accountant
+  assignedAt   DateTime  @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model Floor {
+  id           String    @id @default(cuid())
+  floorNumber  Int
+  name         String    // e.g. "1st Floor", "2nd Floor"
+  propertyId   String
+  property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime  @default(now())
+  rooms        Room[]
+}
+
+model Room {
+  id           String    @id @default(cuid())
+  roomNumber   String
+  floorId      String
+  floor        Floor     @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  propertyId   String
+  property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomType     String    @default("Sharing") // Single, Sharing, Double, Triple
+  totalBeds    Int       @default(2)
+  occupiedBeds Int       @default(0)
+  rentPerBed   Float     @default(5000)
+  status       String    @default("available") // available, occupied, partial, maintenance
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  beds         Bed[]
+}
+
+model Bed {
+  id           String         @id @default(cuid())
+  bedNumber    String         // e.g. "Bed 1", "Bed 2"
+  roomId       String
+  room         Room           @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  propertyId   String
+  property     Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  status       String         @default("available") // available, occupied, maintenance, reserved
+  monthlyRent  Float          @default(5000)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  tenant       TenantProfile?
+}
+
+model TenantProfile {
+  id               String            @id @default(cuid())
+  name             String
+  email            String?
+  phone            String
+  gender           String?
+  emergencyContact String?
+  address          String?
+
+  propertyId       String
+  property         Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  bedId            String?           @unique
+  bed              Bed?              @relation(fields: [bedId], references: [id])
+  userId           String?           @unique
+  user             User?             @relation(fields: [userId], references: [id])
+
+  checkInDate      String
+  checkOutDate     String?
+  expectedCheckOut String?
+  monthlyRent      Float             @default(5000)
+  depositAmount    Float             @default(10000)
+  status           String            @default("checked_in") // checked_in, checked_out, pending
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  payments         Payment[]
+  deposits         SecurityDeposit[]
+  complaints       Complaint[]
+}
+
+model Payment {
+  id              String         @id @default(cuid())
+  tenantId        String
+  tenant          TenantProfile  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  propertyId      String
+  property        Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  month           String         // e.g. "Oct 2026"
+  amount          Float
+  paidAmount      Float
+  paymentDate     String
+  paymentMethod   String         @default("UPI") // UPI, Cash, Bank Transfer, Card
+  referenceNumber String?
+  status          String         @default("paid") // paid, pending, partial
+
+  createdAt       DateTime       @default(now())
+}
+
+model Expense {
+  id              String    @id @default(cuid())
+  propertyId      String
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  category        String    // Maintenance, Electricity, Water, Wi-Fi, Food, Cleaning, Staff Salary, Other
+  description     String
+  amount          Float
+  expenseDate     String
+  vendor          String?
+  paymentMethod   String    @default("Bank Transfer")
+  referenceNumber String?
+
+  createdAt       DateTime  @default(now())
+}
+
+model SecurityDeposit {
+  id              String        @id @default(cuid())
+  tenantId        String
+  tenant          TenantProfile @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  propertyId      String
+  property        Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amountReceived  Float
+  amountRefunded  Float         @default(0)
+  balanceAmount   Float
+  status          String        @default("held") // held, refunded, adjusted
+  refundDate      String?
+  reason          String?
+
+  createdAt       DateTime      @default(now())
+}
+
+model Complaint {
+  id              String         @id @default(cuid())
+  complaintNumber String         @unique // e.g. CMP001
+  title           String
+  description     String?
+  category        String         @default("Maintenance") // Plumbing, Electrical, Cleaning, Wi-Fi, Food, Security, Maintenance, Other
+  priority        String         @default("Medium") // Low, Medium, High, Urgent
+  status          String         @default("Open") // Open, In Progress, Resolved, Closed
+  assignedStaff   String?
+  resolutionNotes String?
+
+  tenantId        String
+  tenant          TenantProfile  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  propertyId      String
+  property        Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model PGPolicy {
+  id                    String   @id @default(cuid())
+  ownerId               String   @unique
+  rentDueDate           Int      @default(5)
+  lateFeeAmount         Float    @default(200)
+  noticePeriodDays      Int      @default(30)
+  visitorCurfew         String   @default("21:00")
+  securityDepositMonths Int      @default(2)
+  generalRules          String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  details    String?
+  createdAt  DateTime  @default(now())
+}

@@ -1,0 +1,454 @@
+PG & HOSTEL MANAGEMENT SaaS
+
+Market Research • Product Requirements • Subscription Model • Technical Roadmap
+
+Prepared for Uyar Technologies Private Limited | 22 October 2026
+
+Planning draft — prices and timelines are recommendations, not vendor quotations.
+
+1. Executive Summary
+
+Build a multi-tenant, subscription-based cloud application for men’s PGs, women’s PGs, student hostels, working-professional accommodation and co-living operators. Each PG owner signs up, starts a time-limited trial, sets up one or more properties, manages tenants and payments, and subscribes based on active bed capacity. Uyar operates a separate super-admin console.
+
+Recommended positioning: Tamil/English-first, mobile-friendly PG operations software with transparent per-bed pricing, trustworthy rent ledgers, flexible electricity billing, and reliable WhatsApp/email reminders.
+
+2. Existing Market: Competitor Scan
+
+Publicly visible competitor pages reviewed October 2026. Feature and pricing claims are self-reported by vendors; verify via demos before committing to positioning.
+
+Product
+
+Publicly advertised capabilities
+
+Price / takeaway
+
+HAUS (haushome.tech)
+
+Beds, rent ledger, issue tracker, WhatsApp, UPI, agreements
+
+Free up to 15 beds; Pro ₹29/bed/month; clear per-bed benchmark
+
+PG Management Software (pgmanagementsoftware.com)
+
+Rooms, rents, deposits, vacate, reports
+
+₹999/month flat, 3-day trial; competes on simplicity
+
+SatraM (satram.in)
+
+Reminders, GST billing, bed-level inventory, multi-hostel
+
+₹800/month up to 100 beds; ₹8/extra bed, 10-day trial (vendor guide)
+
+PG Manager (Google Play)
+
+Electricity/utility billing, expenses, staff, reports, notifications
+
+Feature-rich established competitor; public price not confirmed
+
+Stanzo (stanzo.in)
+
+Self-onboarding, auto invoices, utility split, reminders
+
+Strong functional overlap; public price not confirmed
+
+Nohho (nohho.in)
+
+Multi-property, rent, KYC, staff roles, reminders
+
+Advertises 3-month free access
+
+PGNexa (pgnexa.com)
+
+Visitor QR, complaints, expenses, multiple branches
+
+Useful women’s PG and operations comparison
+
+RentKollect (rentkollect.com)
+
+WhatsApp-first AI assistant, rent/deposits, reminders
+
+Differentiated conversational workflow
+
+Conclusion: The category already exists and includes free products. Do not compete on basic tenant entry alone. Validate willingness to pay for time saved, reliable collections, electricity calculations, owner support, and local-language usability.
+
+3. User Roles and Permissions
+
+Role
+
+Core rights
+
+Uyar Super Admin
+
+Plans, trials, tenants/accounts, subscriptions, support, billing, usage analytics, audit logs
+
+PG Owner
+
+Own properties, staff roles, rent policies, bank/payment settings, financial reports
+
+Property Manager / Warden
+
+Assigned property: onboarding, bed allocation, complaints, visitor logs; restricted finance access
+
+Accountant
+
+Bills, deposits, reconciliation, receipts, expenses, exports
+
+Tenant
+
+Own dues, invoices, receipts, notices, complaint tickets and profile
+
+Optional Guardian
+
+Limited approved student status and dues visibility
+
+4. End-to-End Customer Journey
+
+Owner visits marketing website → chooses Start Free Trial → verifies mobile/email via OTP.
+
+Owner provides PG name, type, address, contact, number of properties, beds and preferred billing method.
+
+System creates isolated PG workspace; guided wizard adds floors, rooms, beds, rent rules and electricity rates.
+
+Owner imports tenants via Excel or adds one by one; sends self-onboarding links.
+
+Trial runs for 14 days (suggested) with feature limits and clear countdown.
+
+Owner selects subscription, pays through gateway, receives SaaS tax invoice and continues service.
+
+Recurring renewals, invoices, reminders and reports run per configured schedule.
+
+If unpaid: grace period → read-only access → suspension of new edits; preserve data and provide export per policy.
+
+5. Functional Requirements — PG Owner Dashboard
+
+5.1 Property, Room and Bed Inventory
+
+Create multiple PG properties; building → floor → room → bed hierarchy.
+
+Room types: single, double, triple, four-sharing and configurable.
+
+Bed states: available, reserved, occupied, notice, maintenance; prevent double assignment.
+
+Occupancy calendar, upcoming vacancies, room transfers, historical allocations.
+
+5.2 Tenant Onboarding and KYC
+
+Name, phone, emergency contact, occupation/college, move-in date, rent and deposit.
+
+Collect consented ID proof and agreement securely; configurable document retention.
+
+Guardian contact optional for students; upload agreement, photograph and documents.
+
+Record check-in checklist, room/bed assignment and welcome message.
+
+5.3 Rent and Deposits
+
+Configurable due day: calendar month or anniversary cycle.
+
+Recurring rent, prorated first/last month, advance payments, partial payments, discounts and late fees.
+
+Separate refundable deposit ledger with deductions, refunds and approval trail.
+
+UPI/cash/bank/card recording; payment status must not change to paid from screenshot alone.
+
+5.4 Electricity and Utilities
+
+Support fixed monthly charge, per-bed share, room sub-meter and tenant-specific meter.
+
+Store previous/current readings, units, tariff slabs/fixed rate, common charges and adjustments.
+
+Owner reviews draft bill before posting; lock issued bill and use credit notes for corrections.
+
+Water, Wi-Fi, laundry, food and maintenance as configurable bill line items.
+
+5.5 Billing and Invoices
+
+Scheduled monthly invoice creation, unique invoice number, issue/due dates, itemized charges.
+
+PDF invoice and payment receipt; tax treatment and GST fields configurable after accountant review.
+
+Credit notes, adjustments, payment allocation, aging reports and downloadable statements.
+
+5.6 Reminders and Messaging
+
+Owner-defined reminder schedule: 5 days before, due date, 3 days after, etc.
+
+WhatsApp Business templates (approved), email, optional SMS; delivery logs and retry controls.
+
+Tenant opt-in/consent, quiet hours, suppression after payment and language templates.
+
+Overdue escalation to owner/manager, without abusive or excessive messaging.
+
+5.7 Operations
+
+Complaints with priority, status, assignee, SLA and photos.
+
+Visitor log, optional gate QR, notice board and emergency contacts.
+
+Staff roles, attendance optional, expenses, vendors, maintenance and mess billing as add-ons.
+
+5.8 Analytics
+
+Total beds, occupied/vacant, occupancy %, billed, collected, outstanding, deposit liabilities.
+
+Expense categories, monthly cash flow, owner income vs cost, property comparisons.
+
+CSV/Excel exports, monthly summaries and audit-friendly transaction history.
+
+6. Uyar Super Admin and Subscription Engine
+
+Manage plan catalog, per-bed limits, trials, promo codes, annual discounts and invoices.
+
+Track signups, active trials, trial-to-paid conversion, MRR, churn, failed payments and active beds.
+
+Provision isolated tenants/workspaces; enforce plan entitlements server-side.
+
+Support tickets, announcements, usage monitoring, impersonation only via logged consented support workflow.
+
+Payment webhooks with idempotency, invoice generation, renewal retries and grace-period policies.
+
+Feature flags, operational audit logs, backups and account closure/export requests.
+
+7. Suggested Pricing — Hypotheses to Test
+
+Charge on billable active/available managed beds with a clearly documented counting rule; not on arbitrary logins. Proposed pricing is illustrative and excludes taxes, messaging usage and gateway fees.
+
+Plan
+
+Capacity
+
+Suggested fee
+
+Included
+
+Trial
+
+Up to 25 beds / 1 property
+
+14 days free
+
+Core setup, tenant import, sample invoices
+
+Starter
+
+Up to 25 beds
+
+₹399/month
+
+Rent, bills, PDFs, manual reminders
+
+Growth
+
+Up to 75 beds
+
+₹899/month
+
+Automation, reports, staff, 2 properties
+
+Business
+
+Up to 200 beds
+
+₹1,999/month
+
+Multi-property, permissions, advanced reports
+
+Enterprise
+
+200+ beds
+
+Custom quote
+
+Custom onboarding, integrations, SLA
+
+Alternative: ₹10–₹20 per managed bed/month with a ₹299–₹499 minimum. Test both with 15–20 PG owners before choosing. Offer annual 15–20% discount only after retention validation. Pass through metered WhatsApp/SMS fees transparently.
+
+8. Product Differentiation and Validation
+
+Tamil + English UI, Tamil message templates, simple mobile-first workflows for wardens.
+
+One-click Excel import with duplicate detection and guided migration from notebooks.
+
+Flexible electricity engine with transparent split calculations and disputes history.
+
+Owner-friendly collection workflow: UPI payment links, ledger, reconciliation and reminder suppression.
+
+Women’s PG optional visitor approval and emergency workflows with privacy safeguards.
+
+Trust: clear fees, no data lock-in, exports, onboarding support, fast support turnaround.
+
+Interview at least 20 owners across 10–30, 30–100 and 100+ bed categories; ask for current tools, monthly collection issues, actual reminder costs, willingness to pay and preferred languages. Run 3–5 pilots for one complete billing cycle before public launch.
+
+9. Technical Architecture
+
+Recommended MVP: React + TypeScript + Tailwind web frontend (responsive PWA), Node.js/NestJS or FastAPI backend, PostgreSQL, Redis-backed job queue, object storage (S3-compatible), payment gateway, transactional email and approved WhatsApp Business API provider. Deploy using Docker on AWS with managed database, TLS, monitoring and automated backups.
+
+Data isolation: each business table carries tenant_id/property_id; enforce tenant-scoped queries and role permissions in backend, with tests against cross-tenant access. Start with modular monolith; split services only when justified by scale.
+
+Core Data Model
+
+organizations, users, memberships, properties, floors, rooms, beds, tenants, stays, documents, rent_rules, utility_meters, readings, charges, invoices, invoice_lines, payments, allocations, deposits, refunds, expenses, message_templates, message_jobs, tickets, subscriptions, plans, audit_logs.
+
+Critical Non-Functional Requirements
+
+Encryption in transit and at rest; secrets manager; MFA for owners/admins; least-privilege access.
+
+Daily backups and restore tests; defined retention and deletion procedures.
+
+Webhook signature validation, idempotent billing jobs, timezone-aware due dates and retry-safe scheduling.
+
+Consent, privacy notice and purpose-limited KYC storage; review India DPDP obligations with counsel.
+
+Accessible UI, mobile performance, logs, alerts, error tracking and rate limits.
+
+10. Workflows and Business Rules
+
+Tenant admission
+
+Enquiry → application → document collection → owner approval → bed reservation → deposit recorded → agreement → check-in → active tenant → welcome message.
+
+Monthly billing
+
+Scheduled job → determine active stay and rent cycle → calculate rent and approved utilities → generate draft → owner review where required → issue immutable invoice → deliver notification → accept/record payment → reconcile → receipt → overdue escalation.
+
+Checkout
+
+Notice → move-out date → prorated rent/utility settlement → inspection → deposit deduction approval → refund → bed becomes available → archive stay (do not erase accounting history).
+
+SaaS trial and expiry
+
+Signup → trial start → usage tracking → upgrade prompts → paid subscription → renewal → failed-payment retry → grace period → restricted mode → reactivation/export/closure.
+
+11. Implementation Roadmap
+
+Phase
+
+Indicative duration
+
+Deliverables
+
+Discovery & UX
+
+2 weeks
+
+Owner interviews, user stories, clickable prototype, billing rules
+
+MVP foundation
+
+3–4 weeks
+
+Auth, organizations, roles, property/bed and tenant onboarding
+
+Finance MVP
+
+3–4 weeks
+
+Rent ledger, utilities, invoices, PDF receipts, basic reporting
+
+SaaS & notifications
+
+2–3 weeks
+
+Trials, subscriptions, payment gateway, email/WhatsApp, admin console
+
+Pilot & hardening
+
+3–4 weeks
+
+QA, security, import, monitoring, live PG pilot and fixes
+
+V2 after launch
+
+Ongoing
+
+Tenant portal enhancements, visitor, complaints, AI, integrations
+
+Total indicative MVP: ~13–17 weeks for a focused team; depends on integrations, staffing, scope and pilot feedback. Avoid promising exact dates before discovery.
+
+12. Acceptance Criteria for MVP
+
+Two different PG owners cannot access each other’s data even by editing API identifiers.
+
+A bed cannot be simultaneously assigned to two active stays.
+
+One tenant can be billed for rent + measured electricity + fixed services with accurate totals.
+
+Partial payments and deposits are represented separately and balance is correct.
+
+Automated reminder is not sent after a payment clears; retry does not duplicate invoices.
+
+Owner can download invoice, receipt, outstanding report and full tenant export.
+
+Trial expiry, successful renewal and failed renewal behave as configured.
+
+Backups can be restored and audit trail shows sensitive financial edits.
+
+13. Commercial Risks and Mitigations
+
+Risk
+
+Mitigation
+
+Crowded/free market
+
+Local-language UX, migration, strong support, measured ROI
+
+Message costs/delivery
+
+Metered pricing, approved templates, fallback email, delivery logs
+
+Incorrect bills
+
+Versioned billing rules, draft review, tests, credit-note corrections
+
+Data security and KYC
+
+Minimize collection, access control, encryption, retention policy
+
+Owner adoption
+
+Excel import, WhatsApp-led onboarding, 10-minute setup wizard
+
+Payment reconciliation
+
+Gateway webhooks, transaction matching, manual verification controls
+
+14. Launch Plan and KPIs
+
+Pilot 3–5 properties → collect feedback → publish pricing → launch self-service trial → partner with PG associations/college-adjacent operators → scale through demos, referral credits and onboarding support.
+
+KPIs: trial signup-to-setup rate, first tenant added, first invoice issued, trial-to-paid conversion, MRR, net revenue retention, support tickets/property, monthly active owners, reminder delivery success and overdue collection time.
+
+15. Recommended Next Decisions
+
+Confirm target: independent PG owners first, rather than college hostel ERP.
+
+Choose pricing: bed tiers vs per-bed; validate in customer interviews.
+
+Define electricity policy and tax invoice requirements with pilot owners/accountant.
+
+Build clickable UI prototype and full product backlog before engineering.
+
+Prioritize web/PWA MVP; build native apps only if pilot usage justifies them.
+
+Sources (checked October 2026)
+
+https://haushome.tech/
+
+https://pgmanagementsoftware.com/pricing
+
+https://www.satram.in/blog/best-pg-management-software-india-2026/
+
+https://play.google.com/store/apps/details?id=com.pgmanager
+
+https://stanzo.in/
+
+https://nohho.in/
+
+https://pgnexa.com/
+
+https://rentkollect.com/
+
+Note: This is product planning research, not legal/tax advice. Validate all competitor offers and current API/provider costs before launch.
+
