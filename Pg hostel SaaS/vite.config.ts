@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -53,7 +54,7 @@ function videoRangePlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), videoRangePlugin()],
+  plugins: [react(), tailwindcss(), videoRangePlugin()],
   server: {
     port: 5173,
     host: true
