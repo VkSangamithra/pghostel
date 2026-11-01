@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "deploy:worker": "wrangler deploy",
+    "deploy": "npm run build && npm run deploy:worker",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "server": "tsx server/index.ts"
@@ -38,6 +40,7 @@
     "oxlint": "^1.88.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "wrangler": "^4.156.0"
   }
 }
