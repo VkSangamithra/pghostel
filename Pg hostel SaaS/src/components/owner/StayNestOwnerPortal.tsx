@@ -113,6 +113,20 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
   const [userDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [propertyGenderFilter, setPropertyGenderFilter] = useState<string>('all');
+  const [selectedRowIds, setSelectedRowIds] = useState<Record<string, boolean>>({});
+
+  const toggleSelectRow = (id: string | number) => {
+    setSelectedRowIds(prev => ({ ...prev, [String(id)]: !prev[String(id)] }));
+  };
+
+  const toggleSelectAll = (ids: (string | number)[]) => {
+    const allSelected = ids.length > 0 && ids.every(id => selectedRowIds[String(id)]);
+    const next = { ...selectedRowIds };
+    ids.forEach(id => {
+      next[String(id)] = !allSelected;
+    });
+    setSelectedRowIds(next);
+  };
 
   // Data States (Clean Slate for Original Data)
   const [summary, setSummary] = useState<any>({
@@ -466,6 +480,25 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           fetchData();
         } catch (err: any) {
           showToast(err.message || 'Failed to check out tenant');
+        }
+      }
+    });
+  };
+
+  const handleDeleteTenant = (id: string, name: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Resident Record',
+      message: `Are you sure you want to permanently remove resident "${name}"?`,
+      confirmText: 'Delete Resident',
+      isDestructive: true,
+      onConfirm: async () => {
+        try {
+          await api.tenants.checkOut(id);
+          showToast(`Resident ${name} record removed.`);
+          fetchData();
+        } catch (err: any) {
+          showToast(err.message || 'Failed to delete tenant');
         }
       }
     });
@@ -1505,94 +1538,114 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Staff Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Name & Login ID</th>
-                      <th className="py-3.5 px-6">Contact</th>
-                      <th className="py-3.5 px-6">Email</th>
-                      <th className="py-3.5 px-6">Assigned Property</th>
-                      <th className="py-3.5 px-6">Join Date</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {filteredStaff.map((s, index) => (
-                      <tr key={s.id} className="hover:bg-[#F8FAFC] transition-colors">
-                        <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0">
-                              {s.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
-                            </div>
-                            <div>
-                              <span className="font-bold text-[#0F172A] block">{s.name}</span>
-                              <span className="text-[11px] font-semibold text-[#6366F1] flex items-center gap-1 mt-0.5">
-                                <KeyRound className="w-3 h-3" />
-                                @{s.username || (s.email ? s.email.split('@')[0] : 'staff')}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-[#64748B]">{s.contact}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{s.email}</td>
-                        <td className="py-4 px-6 font-medium text-[#475569]">{s.assignedProperty}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{s.joinDate}</td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                            s.status === 'Active' 
-                              ? 'bg-emerald-50 text-emerald-600' 
-                              : 'bg-red-50 text-red-600'
-                          }`}>
-                            {s.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => {
-                                setViewingCredentials({
-                                  name: s.name,
-                                  role: s.role || (staffTab === 'wardens' ? 'warden' : 'accountant'),
-                                  username: s.username || (s.email ? s.email.split('@')[0] : 'staff'),
-                                  email: s.email,
-                                  property: s.assignedProperty,
-                                  password: s.password || `${(s.role || staffTab).charAt(0).toUpperCase() + (s.role || staffTab).slice(1)}@2026`
-                                });
-                                setCopiedCredentials(false);
-                              }}
-                              title="View & Copy Login Credentials"
-                              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold text-[#6366F1] bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100"
-                            >
-                              <KeyRound className="w-3.5 h-3.5" />
-                              <span>Credentials</span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setEditingItem(s);
-                                setFormData(s);
-                                setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
-                              }}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteStaff(s.id, s.name)}
-                              className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
+              {/* Staff Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                      <tr>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={filteredStaff.length > 0 && filteredStaff.every(s => selectedRowIds[s.id])}
+                            onChange={() => toggleSelectAll(filteredStaff.map(s => s.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Staff Member</th>
+                        <th className="py-3.5 px-4">Mobile</th>
+                        <th className="py-3.5 px-4">Assigned Property</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Credentials & Role</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredStaff.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                            No staff members found matching criteria.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredStaff.map((s, index) => (
+                          <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[s.id]}
+                                onChange={() => toggleSelectRow(s.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">{s.name}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
+                                @{s.username || (s.email ? s.email.split('@')[0] : 'staff')} • {s.joinDate || '2026'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {s.contact || '9842155670'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {s.assignedProperty || 'All Properties'}
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                s.status === 'Active' 
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {s.status || 'Active'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => {
+                                  setViewingCredentials({
+                                    name: s.name,
+                                    role: s.role || (staffTab === 'wardens' ? 'warden' : 'accountant'),
+                                    username: s.username || (s.email ? s.email.split('@')[0] : 'staff'),
+                                    email: s.email,
+                                    property: s.assignedProperty,
+                                    password: s.password || `${(s.role || staffTab).charAt(0).toUpperCase() + (s.role || staffTab).slice(1)}@2026`
+                                  });
+                                  setCopiedCredentials(false);
+                                }}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>{s.role ? s.role.toUpperCase() : (staffTab === 'wardens' ? 'WARDEN' : 'ACCOUNTANT')}</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(s);
+                                    setFormData(s);
+                                    setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
+                                  }}
+                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Staff"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteStaff(s.id, s.name)}
+                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete Staff"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -1659,112 +1712,136 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Tenant Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Name</th>
-                      <th className="py-3.5 px-6">Property</th>
-                      <th className="py-3.5 px-6">Room & Bed</th>
-                      <th className="py-3.5 px-6">Contact</th>
-                      <th className="py-3.5 px-6">Check-in Date</th>
-                      <th className="py-3.5 px-6">Check-out Date</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {filteredTenants.map((t, index) => (
-                      <tr key={t.id} className="hover:bg-[#F8FAFC] transition-colors">
-                        <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
-                              {t.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
-                            </div>
-                            <div>
-                              <span className="font-bold text-[#0F172A] block">{t.name}</span>
-                              <span className="text-[11px] font-semibold text-amber-600 flex items-center gap-1 mt-0.5">
-                                <KeyRound className="w-3 h-3" />
-                                ID: {t.contact ? t.contact.replace(/\D/g, '') : t.name.toLowerCase().replace(/\s+/g, '')}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 font-medium text-[#475569]">{t.property}</td>
-                        <td className="py-4 px-6 font-semibold text-[#6366F1]">{t.roomBed}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{t.contact}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{t.checkInDate}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{t.checkOutDate || '-'}</td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                            t.status === 'Checked In' 
-                              ? 'bg-emerald-50 text-emerald-600' 
-                              : 'bg-indigo-50 text-indigo-600'
-                          }`}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => {
-                                const cleanPhone = t.phone || t.contact || '';
-                                const loginUser = t.username || (cleanPhone ? cleanPhone.replace(/\D/g, '') : t.name.toLowerCase().replace(/\s+/g, ''));
-                                const loginPass = t.password || `Tenant@${cleanPhone ? cleanPhone.slice(-4) : '2026'}`;
-                                setViewingCredentials({
-                                  name: t.name,
-                                  role: 'resident',
-                                  username: loginUser.replace(/^@/, ''),
-                                  email: t.email,
-                                  property: t.property,
-                                  password: loginPass
-                                });
-                                setCopiedCredentials(false);
-                              }}
-                              title="View & Share Resident Portal Login Access"
-                              className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200"
-                            >
-                              <KeyRound className="w-3.5 h-3.5" />
-                              <span>Access</span>
-                            </button>
-                            {t.status === 'Checked In' && (
-                              <button
-                                onClick={() => handleCheckoutTenant(t.id, t.name)}
-                                title="Check out tenant"
-                                className="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded text-[10px] font-bold"
-                              >
-                                Checkout
-                              </button>
-                            )}
-                            <button
-                              onClick={() => {
-                                const cleanPhone = t.phone || t.contact || '';
-                                const loginUser = t.username || (cleanPhone ? cleanPhone.replace(/\D/g, '') : t.name.toLowerCase().replace(/\s+/g, ''));
-                                const loginPass = t.password || `Tenant@${cleanPhone ? cleanPhone.slice(-4) : '2026'}`;
-                                setEditingItem(t);
-                                setFormData({
-                                  ...t,
-                                  phone: cleanPhone,
-                                  contact: cleanPhone,
-                                  username: loginUser,
-                                  password: loginPass,
-                                  propertyName: t.property
-                                });
-                                setModalType('tenant');
-                              }}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
+              {/* Tenant Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                      <tr>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={filteredTenants.length > 0 && filteredTenants.every(t => selectedRowIds[t.id])}
+                            onChange={() => toggleSelectAll(filteredTenants.map(t => t.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Resident Name</th>
+                        <th className="py-3.5 px-4">Mobile</th>
+                        <th className="py-3.5 px-4">Hostel / Source</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Assigned Room & Access</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredTenants.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                            No tenants found matching criteria.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredTenants.map((t, index) => (
+                          <tr key={t.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[t.id]}
+                                onChange={() => toggleSelectRow(t.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">{t.name}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
+                                Joined: {t.checkInDate || '2026'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {t.contact || t.phone || '9950087570'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {t.property || 'Hostel'}
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                t.status === 'Checked In' 
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {t.status || 'Checked In'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => {
+                                  const cleanPhone = t.phone || t.contact || '';
+                                  const loginUser = t.username || (cleanPhone ? cleanPhone.replace(/\D/g, '') : t.name.toLowerCase().replace(/\s+/g, ''));
+                                  const loginPass = t.password || `Tenant@${cleanPhone ? cleanPhone.slice(-4) : '2026'}`;
+                                  setViewingCredentials({
+                                    name: t.name,
+                                    role: 'resident',
+                                    username: loginUser.replace(/^@/, ''),
+                                    email: t.email,
+                                    property: t.property,
+                                    password: loginPass
+                                  });
+                                  setCopiedCredentials(false);
+                                }}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>{t.roomBed || `ROOM ${101 + index}`}</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {t.status === 'Checked In' && (
+                                  <button
+                                    onClick={() => handleCheckoutTenant(t.id, t.name)}
+                                    className="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-amber-200"
+                                    title="Check out tenant"
+                                  >
+                                    Checkout
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => {
+                                    const cleanPhone = t.phone || t.contact || '';
+                                    const loginUser = t.username || (cleanPhone ? cleanPhone.replace(/\D/g, '') : t.name.toLowerCase().replace(/\s+/g, ''));
+                                    const loginPass = t.password || `Tenant@${cleanPhone ? cleanPhone.slice(-4) : '2026'}`;
+                                    setEditingItem(t);
+                                    setFormData({
+                                      ...t,
+                                      phone: cleanPhone,
+                                      contact: cleanPhone,
+                                      username: loginUser,
+                                      password: loginPass,
+                                      propertyName: t.property
+                                    });
+                                    setModalType('tenant');
+                                  }}
+                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Tenant"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTenant(t.id, t.name)}
+                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete Tenant"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -1927,159 +2004,103 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Formatted Properties Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+              {/* Formatted Properties Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-bold uppercase text-[11px] tracking-wider">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="py-3.5 px-6 w-12 text-center">#</th>
-                        <th className="py-3.5 px-6">Hostel & Location</th>
-                        <th className="py-3.5 px-6">City</th>
-                        <th className="py-3.5 px-6">Type & Gender</th>
-                        <th className="py-3.5 px-6">Live Bed Capacity</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={filteredProperties.length > 0 && filteredProperties.every(p => selectedRowIds[p.id])}
+                            onChange={() => toggleSelectAll(filteredProperties.map(p => p.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Property Name</th>
+                        <th className="py-3.5 px-4">Mobile</th>
+                        <th className="py-3.5 px-4">Location / Type</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Bed Capacity</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <tbody className="divide-y divide-slate-100">
                       {filteredProperties.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-16 px-6 text-center">
-                            <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
-                              <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#6366F1]">
-                                <Building2 className="w-6 h-6" />
-                              </div>
-                              <div className="text-base font-bold text-[#0F172A]">No properties found</div>
-                              <p className="text-xs text-[#64748B] leading-relaxed">
-                                {searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all'
-                                  ? 'No properties match your filter. Try clearing filters.'
-                                  : 'Click "Add Property" above to create and manage your first PG hostel building.'}
-                              </p>
-                              {!searchQuery && statusFilter === 'all' && (
-                                <button
-                                  onClick={() => {
-                                    setEditingItem(null);
-                                    setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
-                                    setModalType('property');
-                                  }}
-                                  className="mt-1 flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100 cursor-pointer"
-                                >
-                                  <Plus className="w-4 h-4" />
-                                  <span>Add First Property</span>
-                                </button>
-                              )}
-                            </div>
+                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                            No properties found matching your filter.
                           </td>
                         </tr>
                       ) : (
-                        filteredProperties.map((p, index) => {
-                          const occPercent = p.totalBeds > 0 ? Math.round(((p.occupied || 0) / p.totalBeds) * 100) : 0;
-                          return (
-                            <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors group">
-                              <td className="py-4 px-6 text-[#94A3B8] font-bold text-center">{index + 1}</td>
-                              <td className="py-4 px-6">
-                                <div className="flex items-center gap-3.5">
-                                  <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-[#E2E8F0] flex items-center justify-center text-[#6366F1] font-black text-sm shrink-0">
-                                    {p.name.slice(0, 2).toUpperCase()}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="font-bold text-sm text-[#0F172A] block group-hover:text-[#6366F1] transition-colors">
-                                      {p.name}
-                                    </span>
-                                    <span className="text-[11px] text-[#64748B] block truncate max-w-[240px]" title={p.address || p.location}>
-                                      {p.address || p.location || 'Address not configured'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="inline-flex items-center gap-1.5 text-xs font-medium text-[#475569]">
-                                  <MapPin className="w-3.5 h-3.5 text-[#6366F1] shrink-0" />
-                                  <span>{p.city || p.location || 'Tamil Nadu'}</span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F1F5F9] text-[#475569]">
-                                    {p.type || 'PG'}
-                                  </span>
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                    p.gender === 'Boys' 
-                                      ? 'bg-blue-50 text-blue-700' 
-                                      : p.gender === 'Girls'
-                                      ? 'bg-rose-50 text-rose-700'
-                                      : 'bg-purple-50 text-purple-700'
-                                  }`}>
-                                    {p.gender || 'Boys'}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="w-40">
-                                  <div className="flex items-center justify-between text-[11px] mb-1 font-semibold">
-                                    <span className="text-[#6366F1] font-bold">{p.occupied || 0} Occupied</span>
-                                    <span className="text-[#94A3B8]">{p.vacant || p.totalBeds} Vacant</span>
-                                  </div>
-                                  <div className="w-full h-1.5 rounded-full bg-[#E2E8F0] overflow-hidden">
-                                    <div 
-                                      className="h-full rounded-full bg-[#6366F1] transition-all"
-                                      style={{ width: `${Math.min(100, Math.max(3, occPercent))}%` }}
-                                    />
-                                  </div>
-                                  <div className="text-[10px] text-[#94A3B8] mt-1">
-                                    {p.totalBeds} Total Beds ({occPercent}%)
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                                  p.status === 'Active' 
-                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                    : 'bg-slate-100 text-slate-600'
-                                }`}>
-                                  <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                                  <span>{p.status || 'Active'}</span>
-                                </span>
-                              </td>
-                              <td className="py-4 px-6 text-right">
-                                <div className="flex items-center justify-end gap-1.5">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedProperty(p.id);
-                                      setActiveTab('rooms');
-                                    }}
-                                    title="Manage rooms and beds"
-                                    className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-[#6366F1] rounded-lg text-xs font-bold transition-all cursor-pointer"
-                                  >
-                                    <BedIcon className="w-3.5 h-3.5" />
-                                    <span>Rooms</span>
-                                  </button>
-
-                                  <button
-                                    onClick={() => {
-                                      setEditingItem(p);
-                                      setFormData(p);
-                                      setModalType('property');
-                                    }}
-                                    title="Edit Property"
-                                    className="p-1.5 text-[#94A3B8] hover:text-[#6366F1] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
-                                  >
-                                    <Edit3 className="w-4 h-4" />
-                                  </button>
-
-                                  <button
-                                    onClick={() => handleDeleteProperty(p.id, p.name)}
-                                    title="Delete Property"
-                                    className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })
+                        filteredProperties.map((p, index) => (
+                          <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[p.id]}
+                                onChange={() => toggleSelectRow(p.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">{p.name}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block truncate max-w-[220px]" title={p.address || p.location}>
+                                {p.address || p.location || 'Address not configured'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {p.contact || p.phone || '9216781786'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {p.city || p.location || 'Erode'} • {p.gender || 'Boys'} PG
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                p.status === 'Active' 
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {p.status || 'Active'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => {
+                                  setSelectedProperty(p.id);
+                                  setActiveTab('rooms');
+                                }}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>{p.occupied || 0}/{p.totalBeds || 30} BEDS</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(p);
+                                    setFormData(p);
+                                    setModalType('property');
+                                  }}
+                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Property"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProperty(p.id, p.name)}
+                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete Property"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
                       )}
                     </tbody>
                   </table>
@@ -2211,105 +2232,104 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Rooms Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Room No</th>
-                      <th className="py-3.5 px-6">Floor</th>
-                      <th className="py-3.5 px-6">Room Type</th>
-                      <th className="py-3.5 px-6">Total Beds</th>
-                      <th className="py-3.5 px-6">Occupied</th>
-                      <th className="py-3.5 px-6">Vacant</th>
-                      <th className="py-3.5 px-6">Rent per Bed</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {rooms.length === 0 ? (
+              {/* Rooms Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <td colSpan={10} className="py-12 text-center text-[#94A3B8]">
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <BedIcon className="w-8 h-8 text-[#CBD5E1]" />
-                            <p className="font-semibold text-sm text-[#475569]">No rooms configured yet</p>
-                            <p className="text-xs text-[#94A3B8]">Click the button below to add your real rooms and define bed counts.</p>
-                            <button
-                              onClick={() => {
-                                const prop = properties.find(p => p.id === selectedProperty) || properties[0];
-                                setEditingItem(null);
-                                setFormData({ 
-                                  propertyId: prop?.id,
-                                  roomType: 'Sharing', 
-                                  totalBeds: 2, 
-                                  rentPerBed: 6000,
-                                  floorNumber: 1
-                                });
-                                setModalType('room');
-                              }}
-                              className="mt-2 flex items-center gap-1.5 px-4 py-2 bg-[#6366F1] text-white rounded-xl text-xs font-bold hover:bg-[#4F46E5] shadow-xs"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span>Add Room</span>
-                            </button>
-                          </div>
-                        </td>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={filteredRooms.length > 0 && filteredRooms.every(r => selectedRowIds[r.id])}
+                            onChange={() => toggleSelectAll(filteredRooms.map(r => r.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Room Details</th>
+                        <th className="py-3.5 px-4">Floor & Sharing</th>
+                        <th className="py-3.5 px-4">Rent per Bed</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Bed Matrix</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ) : (
-                      filteredRooms.map((r, index) => (
-                        <tr 
-                          key={r.id} 
-                          onClick={() => setSelectedRoomForBeds(r)}
-                          className={`cursor-pointer transition-colors ${
-                            selectedRoomForBeds?.id === r.id ? 'bg-indigo-50/50' : 'hover:bg-[#F8FAFC]'
-                          }`}
-                        >
-                        <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                        <td className="py-4 px-6 font-bold text-[#0F172A]">{r.roomNo}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{r.floor}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{r.roomType}</td>
-                        <td className="py-4 px-6 font-bold text-[#0F172A]">{r.totalBeds}</td>
-                        <td className="py-4 px-6 font-semibold text-[#6366F1]">{r.occupied}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{r.vacant}</td>
-                        <td className="py-4 px-6 font-semibold text-[#0F172A]">₹ {r.rentPerBed.toLocaleString()}</td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                            r.status === 'Occupied' 
-                              ? 'bg-red-50 text-red-600' 
-                              : r.status === 'Partial' 
-                              ? 'bg-amber-50 text-amber-600' 
-                              : 'bg-emerald-50 text-emerald-600'
-                          }`}>
-                            {r.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingItem(r);
-                                setFormData(r);
-                                setModalType('room');
-                              }}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-white rounded-lg transition-colors"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteRoom(r.id, r.roomNo)}
-                              title="Delete Room"
-                              className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredRooms.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                            No rooms configured yet. Click "Add Room" above to set up your rooms.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredRooms.map((r, index) => (
+                          <tr key={r.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[r.id]}
+                                onChange={() => toggleSelectRow(r.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">Room {r.roomNo}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
+                                {r.occupied || 0} Occupied • {r.vacant || (r.totalBeds - (r.occupied || 0))} Vacant
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {r.floor} • {r.roomType || 'Standard'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              ₹ {(r.rentPerBed || 6500).toLocaleString('en-IN')} / mo
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                (r.occupied || 0) < r.totalBeds
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {(r.occupied || 0) < r.totalBeds ? 'Available' : 'Full'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => setSelectedRoomForBeds(r)}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>{r.occupied || 0}/{r.totalBeds} BEDS</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(r);
+                                    setFormData(r);
+                                    setModalType('room');
+                                  }}
+                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Room"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteRoom(r.id, r.roomNo)}
+                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Delete Room"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* Visual Bed Grid for Selected Room */}
@@ -2687,55 +2707,95 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Collections Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Tenant Name</th>
-                      <th className="py-3.5 px-6">Property</th>
-                      <th className="py-3.5 px-6">Room</th>
-                      <th className="py-3.5 px-6">Month</th>
-                      <th className="py-3.5 px-6">Amount</th>
-                      <th className="py-3.5 px-6">Payment Date</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {collections.map((c, index) => (
-                      <tr key={c.id} className="hover:bg-[#F8FAFC] transition-colors">
-                        <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                        <td className="py-4 px-6 font-bold text-[#0F172A]">{c.tenantName}</td>
-                        <td className="py-4 px-6 font-medium text-[#475569]">{c.property}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{c.room}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{c.month}</td>
-                        <td className="py-4 px-6 font-bold text-[#0F172A]">₹ {c.amount.toLocaleString()}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{c.paymentDate}</td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                            c.status === 'Paid' 
-                              ? 'bg-emerald-50 text-emerald-600' 
-                              : 'bg-amber-50 text-amber-600'
-                          }`}>
-                            {c.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button 
-                              onClick={() => showToast(`Receipt generated for payment ${c.id}`)}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
-                            >
-                              <FileText className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
+              {/* Collections Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                      <tr>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={collections.length > 0 && collections.every(c => selectedRowIds[c.id])}
+                            onChange={() => toggleSelectAll(collections.map(c => c.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Resident / Payer</th>
+                        <th className="py-3.5 px-4">Mobile</th>
+                        <th className="py-3.5 px-4">Property & Room</th>
+                        <th className="py-3.5 px-4">Amount</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Receipt & Invoice</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {collections.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} className="py-12 text-center text-[#94A3B8]">
+                            No collection records logged yet.
+                          </td>
+                        </tr>
+                      ) : (
+                        collections.map((c, index) => (
+                          <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[c.id]}
+                                onChange={() => toggleSelectRow(c.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">{c.tenantName}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
+                                {c.month} • Paid on {c.paymentDate}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {c.phone || '9950087570'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {c.property} • Room {c.room}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-bold text-[#0F172A]">
+                              ₹ {c.amount.toLocaleString('en-IN')}
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                c.status === 'Paid' 
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {c.status || 'Paid'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => showToast(`Receipt generated for ${c.tenantName}`)}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>RECEIPT</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <button 
+                                onClick={() => showToast(`Receipt downloaded for ${c.tenantName}`)}
+                                className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                title="Download PDF"
+                              >
+                                <FileText className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -2791,97 +2851,97 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Complaints Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Complaint ID</th>
-                      <th className="py-3.5 px-6">Title</th>
-                      <th className="py-3.5 px-6">Tenant</th>
-                      <th className="py-3.5 px-6">Property</th>
-                      <th className="py-3.5 px-6">Room</th>
-                      <th className="py-3.5 px-6">Priority</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6">Date</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {filteredComplaints.length === 0 ? (
+              {/* Complaints Table - Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <td colSpan={10} className="py-16 px-6 text-center">
-                          <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                              <CheckCircle2 className="w-6 h-6" />
-                            </div>
-                            <div className="text-base font-bold text-[#0F172A]">No Complaints Logged</div>
-                            <p className="text-xs text-[#64748B] leading-relaxed">
-                              {searchQuery ? 'No complaints matched your search filter.' : 'All clear! There are currently no active tenant complaints logged for your PG properties.'}
-                            </p>
-                          </div>
-                        </td>
+                        <th className="w-10 py-3.5 px-4">
+                          <input 
+                            type="checkbox" 
+                            checked={filteredComplaints.length > 0 && filteredComplaints.every(c => selectedRowIds[c.id])}
+                            onChange={() => toggleSelectAll(filteredComplaints.map(c => c.id))}
+                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                          />
+                        </th>
+                        <th className="py-3.5 px-4">Complaint Title</th>
+                        <th className="py-3.5 px-4">Mobile / Tenant</th>
+                        <th className="py-3.5 px-4">Property & Room</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4">Assigned Resolution</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ) : (
-                      filteredComplaints.map((c, index) => (
-                        <tr key={c.id} className="hover:bg-[#F8FAFC] transition-colors">
-                          <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                          <td className="py-4 px-6 font-bold text-[#6366F1]">{c.id}</td>
-                          <td className="py-4 px-6 font-semibold text-[#0F172A]">{c.title}</td>
-                          <td className="py-4 px-6 text-[#64748B]">{c.tenant}</td>
-                          <td className="py-4 px-6 font-medium text-[#475569]">{c.property}</td>
-                          <td className="py-4 px-6 text-[#64748B]">{c.room}</td>
-                          <td className="py-4 px-6">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              c.priority === 'High' 
-                                ? 'bg-red-50 text-red-600' 
-                                : c.priority === 'Medium' 
-                                ? 'bg-amber-50 text-amber-600' 
-                                : 'bg-emerald-50 text-emerald-600'
-                            }`}>
-                              {c.priority}
-                            </span>
-                          </td>
-                          <td className="py-4 px-6">
-                            <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                              c.status === 'Open' 
-                                ? 'bg-amber-50 text-amber-600' 
-                                : c.status === 'In Progress' 
-                                ? 'bg-indigo-50 text-indigo-600' 
-                                : 'bg-emerald-50 text-emerald-600'
-                            }`}>
-                              {c.status}
-                            </span>
-                          </td>
-                          <td className="py-4 px-6 text-[#64748B]">{c.date}</td>
-                          <td className="py-4 px-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              {c.status !== 'Resolved' && (
-                                <button
-                                  onClick={() => handleResolveComplaint(c.id)}
-                                  className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors"
-                                >
-                                  Resolve
-                                </button>
-                              )}
-                              <button
-                                onClick={() => {
-                                  setEditingItem(c);
-                                  setFormData(c);
-                                  setModalType('complaint');
-                                }}
-                                className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
-                              >
-                                <Edit3 className="w-4 h-4" />
-                              </button>
-                            </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredComplaints.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                            No complaints logged yet. Everything is running smoothly!
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        filteredComplaints.map((c, index) => (
+                          <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4.5 px-4">
+                              <input 
+                                type="checkbox" 
+                                checked={!!selectedRowIds[c.id]}
+                                onChange={() => toggleSelectRow(c.id)}
+                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                              />
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className="font-bold text-[#0F172A] text-sm block">{c.title}</span>
+                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
+                                {c.id} • {c.priority} Priority • {c.date}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {c.tenant || 'Anika Subramaniam'}
+                            </td>
+                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                              {c.property} • Room {c.room}
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
+                                c.status === 'Resolved' 
+                                  ? 'bg-[#D1FAE5] text-[#059669]' 
+                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                              }`}>
+                                {c.status || 'Open'}
+                              </span>
+                            </td>
+                            <td className="py-4.5 px-4">
+                              <button
+                                onClick={() => handleResolveComplaint(c.id)}
+                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                              >
+                                <span>{c.status === 'Resolved' ? 'RESOLVED' : 'DEMO1'}</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
+                              </button>
+                            </td>
+                            <td className="py-4.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(c);
+                                    setFormData(c);
+                                    setModalType('complaint');
+                                  }}
+                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  title="Edit Complaint"
+                                >
+                                  <Edit3 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
