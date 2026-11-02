@@ -39,11 +39,7 @@ import {
   EyeOff,
   Upload,
   Camera,
-  Image as ImageIcon,
-  Cloud,
-  LayoutGrid,
-  List,
-  Sparkles
+  Image as ImageIcon
 } from 'lucide-react';
 import { api } from '../../services/api';
 import './StayNestOwnerPortal.css';
@@ -115,8 +111,6 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
   const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [propertyViewMode, setPropertyViewMode] = useState<'cards' | 'table'>('cards');
-  const [propertyGenderFilter, setPropertyGenderFilter] = useState<string>('all');
 
   // Data States (Clean Slate for Original Data)
   const [summary, setSummary] = useState<any>({
@@ -622,36 +616,12 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
   const filteredProperties = useMemo(() => {
     return properties.filter(p => {
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch = !q || 
-                            p.name?.toLowerCase().includes(q) || 
-                            p.location?.toLowerCase().includes(q) ||
-                            p.city?.toLowerCase().includes(q) ||
-                            p.address?.toLowerCase().includes(q) ||
-                            p.type?.toLowerCase().includes(q);
+      const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.location?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || p.status?.toLowerCase() === statusFilter.toLowerCase();
-      const matchesGender = propertyGenderFilter === 'all' || p.gender?.toLowerCase() === propertyGenderFilter.toLowerCase();
-      return matchesSearch && matchesStatus && matchesGender;
+      return matchesSearch && matchesStatus;
     });
-  }, [properties, searchQuery, statusFilter, propertyGenderFilter]);
-
-  const propertyStats = useMemo(() => {
-    const totalProps = properties.length;
-    const totalBeds = properties.reduce((acc, p) => acc + (Number(p.totalBeds) || 0), 0);
-    const totalOccupied = properties.reduce((acc, p) => acc + (Number(p.occupied) || 0), 0);
-    const totalVacant = properties.reduce((acc, p) => acc + (Number(p.vacant) || 0), 0);
-    const occupancyRate = totalBeds > 0 ? Math.round((totalOccupied / totalBeds) * 100) : 0;
-    const activeProps = properties.filter(p => p.status === 'Active').length;
-
-    return {
-      totalProps,
-      activeProps,
-      totalBeds,
-      totalOccupied,
-      totalVacant,
-      occupancyRate
-    };
-  }, [properties]);
+  }, [properties, searchQuery, statusFilter]);
 
   const filteredRooms = useMemo(() => {
     return rooms.filter(r => {
@@ -679,100 +649,51 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
   return (
     <div className="sn-portal-container flex h-screen bg-[#F6F7FB] text-[#1E293B] font-sans antialiased overflow-hidden">
       {/* ========================================================= */}
-      {/* PERSISTENT LEFT SIDEBAR (Redesigned to Match Image 1)     */}
+      {/* PERSISTENT LEFT SIDEBAR (Exact Match to Reference Design) */}
       {/* ========================================================= */}
       <aside className={`sn-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="flex flex-col flex-1 min-h-0">
-          {/* Top Brand Header Banner (Matching Image 1) */}
-          {!isSidebarCollapsed ? (
-            <div className="sn-header-banner relative overflow-hidden shrink-0">
-              {/* Top-left green foliage / leaves illustration */}
-              <svg 
-                className="absolute -top-1 -left-1 w-24 h-20 pointer-events-none z-10 opacity-90" 
-                viewBox="0 0 90 70" 
-                fill="none"
-              >
-                <path d="M0,0 C22,10 38,26 40,46 C26,38 14,35 0,38 Z" fill="#22C55E"/>
-                <path d="M6,0 C32,9 48,22 55,40 C40,33 24,30 9,34 Z" fill="#16A34A" opacity="0.9"/>
-                <path d="M18,0 C44,16 60,32 67,52 C52,43 35,41 20,45 Z" fill="#15803D" opacity="0.85"/>
-                <path d="M32,0 C58,13 74,26 82,44 C67,37 50,35 36,39 Z" fill="#166534" opacity="0.75"/>
-                <path d="M0,18 C16,24 28,37 30,55 C19,47 9,44 0,46 Z" fill="#4ADE80" opacity="0.85"/>
-              </svg>
-
-              {/* Night building photo / illustration at top-right */}
-              <div className="absolute right-0 top-0 bottom-0 w-36 pointer-events-none overflow-hidden">
-                <img 
-                  src="/staynest_header_building.jpg" 
-                  alt="StayNest PG Building"
-                  className="w-full h-full object-cover object-left-top mix-blend-lighten opacity-95 filter contrast-110"
-                  style={{
-                    maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 25%, black 80%)',
-                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 25%, black 80%)'
-                  }}
-                />
-              </div>
-
-              {/* Header Content */}
-              <div className="relative z-10 px-4 pt-6 pb-5 flex items-start justify-between">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  {/* StayNest Logo: House with Bed */}
-                  <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg shrink-0">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/>
-                      <path d="M7 16h10"/>
-                      <path d="M7 13h4a2 2 0 0 1 2 2v1H7v-3z"/>
-                    </svg>
+          {/* Top Brand Header Card (Matching Image 1 & Image 3) */}
+          <div className="sn-brand-card-container">
+            {!isSidebarCollapsed ? (
+              <div className="sn-brand-card">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="sn-brand-logo-sq">
+                    <Building2 className="w-5 h-5 text-[#7C3AED]" />
                   </div>
-
                   <div className="min-w-0">
-                    <h1 className="text-lg font-extrabold tracking-tight text-white leading-tight">
-                      Stay<span className="text-[#D8B4FE]">Nest</span>
-                    </h1>
-                    <p className="text-[10.5px] font-semibold text-[#DDD6FE] tracking-wide mt-0.5 truncate">
-                      PG Owner Portal
-                    </p>
+                    <h1 className="sn-brand-title-text font-black tracking-tight text-[#0F172A]">STAYNEST</h1>
+                    <div className="sn-brand-sub-badge">
+                      <span className="sn-live-dot"></span>
+                      <span>PG OWNER PORTAL</span>
+                    </div>
                   </div>
                 </div>
-
-                {/* Collapse Button */}
                 <button
                   onClick={toggleSidebar}
                   title="Collapse sidebar"
-                  className="w-7 h-7 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white/80 hover:text-white flex items-center justify-center transition-all cursor-pointer shrink-0 mt-0.5 ml-1"
+                  className="w-7 h-7 rounded-lg text-slate-400 hover:text-[#7C3AED] hover:bg-purple-100/50 flex items-center justify-center transition-all cursor-pointer ml-1 shrink-0"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
               </div>
-
-              {/* Organic Wavy Bottom Divider */}
-              <svg 
-                className="absolute -bottom-[1px] left-0 right-0 w-full h-5 pointer-events-none text-[#F8F9FE] fill-current" 
-                viewBox="0 0 320 20" 
-                preserveAspectRatio="none"
-              >
-                <path d="M0,0 C90,22 180,24 245,10 C280,2 300,5 320,8 L320,20 L0,20 Z" />
-              </svg>
-            </div>
-          ) : (
-            <div className="p-3 flex justify-center shrink-0">
+            ) : (
               <button
                 onClick={toggleSidebar}
                 title="Expand sidebar"
-                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#581C87] text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform relative group cursor-pointer"
+                className="sn-brand-card group relative"
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                  <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/>
-                  <path d="M7 16h10"/>
-                  <path d="M7 13h4a2 2 0 0 1 2 2v1H7v-3z"/>
-                </svg>
+                <div className="sn-brand-logo-sq">
+                  <Building2 className="w-5 h-5 text-[#7C3AED] group-hover:scale-95 transition-transform" />
+                </div>
                 <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-white border border-[#EDE7FD] shadow-xs flex items-center justify-center text-[#7C3AED]">
                   <ChevronRight className="w-2.5 h-2.5" />
                 </span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Navigation Sections (Categorized exactly as in Image 1) */}
+          {/* Navigation Sections (Categorized like Image 1, collapsing to Image 3) */}
           <nav className="sn-nav-list flex-1">
             {[
               {
@@ -781,13 +702,13 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 items: [
                   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                   { id: 'properties', label: 'Properties', icon: Building2 },
+                  { id: 'staff', label: 'Staff Management', icon: Users },
                 ]
               },
               {
                 id: 'residents',
                 title: 'RESIDENTS & ROOMS',
                 items: [
-                  { id: 'staff', label: 'Staff Management', icon: Users },
                   { id: 'tenants', label: 'Tenants', icon: UserCheck },
                   { id: 'rooms', label: 'Rooms & Beds', icon: BedIcon },
                 ]
@@ -813,114 +734,82 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               }
             ].map((section, secIdx) => (
               <div key={section.id} className="w-full">
-                {/* Section title when expanded, thin horizontal line when collapsed */}
+                {/* Section title when expanded, thin horizontal line when collapsed (Image 3) */}
                 {!isSidebarCollapsed ? (
-                  <div className="sn-nav-section-title-wrap">
-                    <span className="w-5 h-1 rounded-full bg-[#8B5CF6] shrink-0" />
-                    <span className="text-[11px] font-extrabold tracking-wider text-[#1E1B4B] uppercase">
-                      {section.title}
-                    </span>
+                  <div className="sn-nav-section-title">
+                    {section.title}
                   </div>
                 ) : secIdx > 0 ? (
                   <div className="sn-nav-section-divider" />
                 ) : null}
 
                 {/* Section Items */}
-                {!isSidebarCollapsed ? (
-                  <div className="space-y-1.5">
-                    {section.items.map(item => {
-                      const Icon = item.icon;
-                      const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
+                <div className="space-y-1">
+                  {section.items.map(item => {
+                    const Icon = item.icon;
+                    const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
 
-                      return (
-                        <button
-                          key={item.id}
-                          title={item.label}
-                          onClick={() => {
-                            setActiveTab(item.id as TabType);
-                            setSearchQuery('');
-                            setStatusFilter('all');
-                          }}
-                          className={`sn-nav-card ${isActive ? 'active' : ''} group`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            {/* Squircle Icon Container */}
-                            <div className={`sn-nav-icon-sq ${isActive ? 'active' : ''}`}>
-                              <Icon className="w-4 h-4" />
-                            </div>
+                    return (
+                      <button
+                        key={item.id}
+                        title={item.label}
+                        onClick={() => {
+                          setActiveTab(item.id as TabType);
+                          setSearchQuery('');
+                          setStatusFilter('all');
+                        }}
+                        className={`sn-nav-btn ${isActive ? 'active' : ''} group`}
+                      >
+                        {/* Solid purple vertical active bar on the left (Image 1 & 3) */}
+                        {isActive && <div className="sn-active-bar" />}
 
-                            <span className={`sn-nav-card-label ${isActive ? 'active' : ''}`}>
-                              {item.label}
-                            </span>
+                        {/* Squircle Icon Container */}
+                        <div className="sn-icon-sq-wrap relative">
+                          <div className="sn-icon-sq">
+                            <Icon className="w-4 h-4" />
                           </div>
 
-                          {/* Right Chevron & Badges */}
-                          <div className="flex items-center gap-2 shrink-0">
-                            {item.hasGreenDot && (
-                              <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-xs shrink-0" />
-                            )}
-                            {item.badge !== undefined && (
-                              <span className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full ${
-                                isActive ? 'bg-white/20 text-white' : 'bg-[#EDE7FD] text-[#7C3AED]'
-                              }`}>
-                                {item.badge}
-                              </span>
-                            )}
-                            <ChevronRight className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="space-y-2 flex flex-col items-center">
-                    {section.items.map(item => {
-                      const Icon = item.icon;
-                      const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
-
-                      return (
-                        <button
-                          key={item.id}
-                          title={item.label}
-                          onClick={() => {
-                            setActiveTab(item.id as TabType);
-                            setSearchQuery('');
-                            setStatusFilter('all');
-                          }}
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center relative transition-all cursor-pointer ${
-                            isActive 
-                              ? 'bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-white shadow-md' 
-                              : 'bg-white hover:bg-[#F5F3FF] text-[#7C3AED] border border-[#ECE7FE] shadow-2xs'
-                          }`}
-                        >
-                          <Icon className="w-5 h-5" />
-                          {item.hasGreenDot && (
-                            <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#10B981] ring-2 ring-white" />
+                          {/* Collapsed dot or badge positioning (Image 3) */}
+                          {isSidebarCollapsed && item.hasGreenDot && (
+                            <span className="sn-green-dot" />
                           )}
-                          {item.badge !== undefined && (
-                            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-[#7C3AED] text-white text-[9px] font-extrabold flex items-center justify-center">
+                          {isSidebarCollapsed && item.badge !== undefined && (
+                            <span className="sn-item-badge">
                               {item.badge}
                             </span>
                           )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                        </div>
+
+                        {/* Label & Badges when expanded (Image 1) */}
+                        {!isSidebarCollapsed && (
+                          <>
+                            <span className="sn-item-label font-semibold">{item.label}</span>
+                            {item.hasGreenDot && <span className="sn-green-dot" />}
+                            {item.badge !== undefined && (
+                              <span className="sn-item-badge">
+                                {item.badge}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </nav>
         </div>
 
-        {/* Bottom Profile Card & Footer (Exact Match to Image 1) */}
-        <div className="sn-sidebar-bottom-modern">
+        {/* Bottom Profile Card & Footer (Exact Match to Image 1 & Image 3) */}
+        <div className="sn-sidebar-bottom">
           {/* Back to Public Website */}
           {onNavigateLanding && !isSidebarCollapsed && (
             <button
               onClick={onNavigateLanding}
-              className="sn-back-website-btn"
+              className="sn-back-btn"
             >
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className="w-3.5 h-3.5" />
               <span>Back to Public Website</span>
             </button>
           )}
@@ -937,12 +826,12 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
           {/* Profile Card */}
           {!isSidebarCollapsed ? (
-            <div className="sn-profile-card-modern">
+            <div className="sn-profile-card">
               <div className="flex items-center gap-2.5 min-w-0">
-                {/* Purple Avatar with Online Dot */}
-                <div className="sn-profile-avatar-circle">
+                {/* Purple Avatar Squircle with Green Online Dot */}
+                <div className="sn-profile-avatar-sq">
                   {ownerInitials}
-                  <span className="sn-profile-online-badge"></span>
+                  <span className="sn-profile-online-dot"></span>
                 </div>
                 {/* Name & Subtitle */}
                 <div className="min-w-0 text-left">
@@ -967,15 +856,17 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               )}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2.5">
+              {/* Collapsed Avatar with Online Dot (Image 3) */}
               <div 
-                className="sn-profile-avatar-circle cursor-pointer"
+                className="sn-profile-avatar-sq cursor-pointer"
                 title={`${ownerName} • ${ownerSubtitle}`}
               >
                 {ownerInitials}
-                <span className="sn-profile-online-badge"></span>
+                <span className="sn-profile-online-dot"></span>
               </div>
 
+              {/* Collapsed Logout Button (Image 3) */}
               {onLogout && (
                 <button
                   onClick={onLogout}
@@ -990,21 +881,9 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
           {/* Version Footer */}
           {!isSidebarCollapsed && (
-            <div className="flex items-center justify-center gap-1.5 text-center text-[11px] font-semibold text-slate-400 pt-0.5">
-              <Cloud className="w-3.5 h-3.5 text-slate-400" />
-              <span>StayNest Cloud • v2.4</span>
+            <div className="text-center text-[11px] font-semibold text-slate-400 pt-0.5">
+              StayNest Cloud • v2.4
             </div>
-          )}
-
-          {/* Bottom subtle purple decorative wave */}
-          {!isSidebarCollapsed && (
-            <svg 
-              className="w-full h-3 text-purple-200/50 fill-current mt-0.5" 
-              viewBox="0 0 280 12" 
-              preserveAspectRatio="none"
-            >
-              <path d="M0,8 C70,2 160,14 280,6 L280,12 L0,12 Z" />
-            </svg>
           )}
         </div>
       </aside>
@@ -1875,54 +1754,41 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           )}
 
           {/* ========================================================= */}
-          {/* 4. PROPERTY MANAGEMENT MODULE (Building Command Center)   */}
+          {/* 4. PROPERTY MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'properties' && (
-            <div className="space-y-6 max-w-7xl mx-auto">
-              {/* Header with Title and Add Property CTA */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-black text-[#0F172A] tracking-tight">
-                      Hostel & PG Properties
-                    </h2>
-                    <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-100 text-[#7C3AED] border border-purple-200/60">
-                      {properties.length} {properties.length === 1 ? 'Building' : 'Buildings'}
-                    </span>
-                  </div>
-                  <p className="text-sm font-medium text-[#64748B] mt-1">
-                    Manage your hostel buildings, floor units, live room allocations, and amenities
-                  </p>
+                  <h2 className="text-2xl font-bold text-[#0F172A]">Property Management</h2>
+                  <p className="text-sm text-[#64748B]">Manage your PG properties and details</p>
+                </div>
+              </div>
+
+              {/* Filters & Add Property Button */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="relative w-80">
+                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search properties..."
+                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
+                  />
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* View Mode Toggle */}
-                  <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
-                    <button
-                      onClick={() => setPropertyViewMode('cards')}
-                      title="Command Center Cards"
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        propertyViewMode === 'cards'
-                          ? 'bg-white text-[#7C3AED] shadow-xs'
-                          : 'text-slate-500 hover:text-slate-900'
-                      }`}
-                    >
-                      <LayoutGrid className="w-3.5 h-3.5" />
-                      <span>Showcase</span>
-                    </button>
-                    <button
-                      onClick={() => setPropertyViewMode('table')}
-                      title="Compact Table"
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        propertyViewMode === 'table'
-                          ? 'bg-white text-[#7C3AED] shadow-xs'
-                          : 'text-slate-500 hover:text-slate-900'
-                      }`}
-                    >
-                      <List className="w-3.5 h-3.5" />
-                      <span>Table</span>
-                    </button>
-                  </div>
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
 
                   <button
                     onClick={() => {
@@ -1930,408 +1796,124 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                       setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
                       setModalType('property');
                     }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7C3AED] to-[#6366F1] hover:from-[#6D28D9] hover:to-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Add New Property</span>
+                    <span>Add Property</span>
                   </button>
                 </div>
               </div>
 
-              {/* Executive Summary Metrics Strip */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Hostel Buildings</span>
-                    <h3 className="text-2xl font-black text-slate-900 mt-1">{propertyStats.totalProps} Properties</h3>
-                    <p className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {propertyStats.activeProps} Operational
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center shrink-0">
-                    <Building2 className="w-6 h-6" />
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Bed Inventory</span>
-                    <h3 className="text-2xl font-black text-slate-900 mt-1">{propertyStats.totalBeds} Beds</h3>
-                    <p className="text-xs font-medium text-slate-500 mt-1">Across all floors</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <BedIcon className="w-6 h-6" />
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Occupied Beds</span>
-                    <h3 className="text-2xl font-black text-slate-900 mt-1">
-                      {propertyStats.totalOccupied} <span className="text-sm font-bold text-purple-600">({propertyStats.occupancyRate}%)</span>
-                    </h3>
-                    <p className="text-xs font-medium text-slate-500 mt-1">Active residents</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                    <Users className="w-6 h-6" />
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Vacant Beds</span>
-                    <h3 className="text-2xl font-black text-slate-900 mt-1">
-                      {propertyStats.totalVacant} <span className="text-sm font-bold text-emerald-600">Available</span>
-                    </h3>
-                    <p className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> Ready for check-in
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Search & Filter Toolbar */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
-                <div className="relative flex-1 min-w-[260px] max-w-md">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Search className="w-4 h-4 text-slate-400" />
-                  </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search hostel name, city or location..."
-                    className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:bg-white transition-all"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center flex-wrap gap-2.5">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] cursor-pointer"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-
-                  <select 
-                    value={propertyGenderFilter}
-                    onChange={(e) => setPropertyGenderFilter(e.target.value)}
-                    className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] cursor-pointer"
-                  >
-                    <option value="all">All Genders</option>
-                    <option value="boys">Boys Only</option>
-                    <option value="girls">Girls Only</option>
-                    <option value="co-living">Co-Living / Unisex</option>
-                  </select>
-
-                  {(searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery('');
-                        setStatusFilter('all');
-                        setPropertyGenderFilter('all');
-                      }}
-                      className="px-3 py-2 text-xs font-bold text-[#7C3AED] hover:bg-purple-50 rounded-xl transition-all cursor-pointer"
-                    >
-                      Clear Filters
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* MAIN CONTENT: Building Command Center Cards (Default) */}
-              {propertyViewMode === 'cards' ? (
-                <div className="space-y-6">
-                  {filteredProperties.length === 0 ? (
-                    <div className="bg-white p-12 rounded-3xl border border-slate-200 text-center">
-                      <Building2 className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-                      <h4 className="font-black text-lg text-slate-900">No Properties Found</h4>
-                      <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                        {searchQuery ? 'No hostels match your search query.' : 'Click "Add New Property" to create your first PG hostel building.'}
-                      </p>
-                    </div>
-                  ) : (
-                    filteredProperties.map((p) => {
-                      const occPercent = p.totalBeds > 0 ? Math.round(((p.occupied || 0) / p.totalBeds) * 100) : 0;
-                      return (
-                        <div 
-                          key={p.id}
-                          className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all overflow-hidden"
-                        >
-                          <div className="flex flex-col lg:flex-row">
-                            {/* Left: Building Photo & Identity Banner */}
-                            <div className="lg:w-80 relative bg-slate-900 shrink-0 min-h-[240px]">
-                              <img 
-                                src={p.image || '/staynest_header_building.jpg'} 
-                                alt={p.name}
-                                className="w-full h-full object-cover opacity-90"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/30" />
-                              
-                              {/* Top Badges */}
-                              <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="px-3 py-1 rounded-full text-[11px] font-black bg-white/95 text-slate-800 shadow-xs">
-                                    {p.type || 'PG'}
-                                  </span>
-                                  <span className={`px-3 py-1 rounded-full text-[11px] font-black shadow-xs ${
-                                    p.gender === 'Boys' 
-                                      ? 'bg-blue-600 text-white' 
-                                      : p.gender === 'Girls'
-                                      ? 'bg-rose-600 text-white'
-                                      : 'bg-purple-600 text-white'
-                                  }`}>
-                                    {p.gender || 'Boys'}
-                                  </span>
-                                </div>
-                                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-md">
-                                  ID: {p.id.slice(-4)}
-                                </span>
-                              </div>
-
-                              {/* Bottom Identity */}
-                              <div className="absolute bottom-4 left-4 right-4 text-white">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/90 text-white backdrop-blur-md mb-2">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                  {p.status || 'Active & Operational'}
-                                </span>
-                                <h3 className="text-2xl font-black leading-tight drop-shadow-sm">{p.name}</h3>
-                                <p className="text-xs text-slate-300 flex items-center gap-1 mt-1 drop-shadow-sm truncate">
-                                  <MapPin className="w-3.5 h-3.5 text-purple-300 shrink-0" />
-                                  <span>{p.city || p.location || 'Tamil Nadu'}</span>
-                                </p>
-                              </div>
+              {/* Properties Table */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
+                    <tr>
+                      <th className="py-3.5 px-6">#</th>
+                      <th className="py-3.5 px-6">Name</th>
+                      <th className="py-3.5 px-6">Location</th>
+                      <th className="py-3.5 px-6">Type</th>
+                      <th className="py-3.5 px-6">Gender</th>
+                      <th className="py-3.5 px-6">Total Beds</th>
+                      <th className="py-3.5 px-6">Occupied</th>
+                      <th className="py-3.5 px-6">Vacant</th>
+                      <th className="py-3.5 px-6">Status</th>
+                      <th className="py-3.5 px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#F1F5F9]">
+                    {filteredProperties.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="py-16 px-6 text-center">
+                          <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#6366F1]">
+                              <Building2 className="w-6 h-6" />
                             </div>
-
-                            {/* Center & Right: Command Center Dashboard for this Property */}
-                            <div className="flex-1 p-6 sm:p-7 flex flex-col justify-between gap-6">
-                              <div>
-                                {/* Row 1: Address and Floor Info */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                                  <div>
-                                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Hostel Address</span>
-                                    <p className="text-sm font-semibold text-slate-800 mt-0.5">
-                                      {p.address || p.location || 'Address not configured'}
-                                    </p>
-                                  </div>
-
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700">
-                                      🏢 {p.totalFloors || 3} Floors
-                                    </span>
-                                    <span className="px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200/80 text-xs font-bold text-[#7C3AED]">
-                                      🛏️ {p.totalBeds} Total Beds
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Row 2: Live Bed Metrics Bar */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                  <div>
-                                    <span className="text-xs font-bold text-slate-500">Live Occupancy</span>
-                                    <div className="flex items-baseline gap-2 mt-1">
-                                      <span className="text-xl font-black text-[#7C3AED]">{p.occupied || 0} Beds</span>
-                                      <span className="text-xs font-bold text-purple-600">({occPercent}%)</span>
-                                    </div>
-                                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden mt-2">
-                                      <div 
-                                        className="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-600"
-                                        style={{ width: `${Math.min(100, Math.max(3, occPercent))}%` }}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <span className="text-xs font-bold text-slate-500">Available Vacancies</span>
-                                    <div className="flex items-baseline gap-2 mt-1">
-                                      <span className="text-xl font-black text-emerald-600">{p.vacant || p.totalBeds} Beds</span>
-                                      <span className="text-xs font-bold text-emerald-600">Available</span>
-                                    </div>
-                                    <p className="text-[11px] font-medium text-slate-400 mt-2">Ready for immediate check-in</p>
-                                  </div>
-
-                                  <div>
-                                    <span className="text-xs font-bold text-slate-500">Floor Distribution</span>
-                                    <div className="flex items-center gap-1.5 flex-wrap mt-2">
-                                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-slate-700 border border-slate-200">
-                                        G: 10 Beds
-                                      </span>
-                                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-slate-700 border border-slate-200">
-                                        1F: 10 Beds
-                                      </span>
-                                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-slate-700 border border-slate-200">
-                                        2F: 10 Beds
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Row 3: Included Hostel Amenities */}
-                                <div className="mt-4 flex items-center gap-2 flex-wrap">
-                                  <span className="text-xs font-bold text-slate-400 mr-1">Amenities:</span>
-                                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600">📶 High-Speed WiFi</span>
-                                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600">🍽️ 3-Time Mess</span>
-                                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600">📹 24/7 CCTV</span>
-                                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600">🧺 Laundry</span>
-                                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600">⚡ Power Backup</span>
-                                </div>
-                              </div>
-
-                              {/* Row 4: Command Center Action Hub */}
-                              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  {/* Manage Rooms CTA */}
-                                  <button
-                                    onClick={() => {
-                                      setSelectedProperty(p.id);
-                                      setActiveTab('rooms');
-                                    }}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7C3AED] to-[#6366F1] hover:from-[#6D28D9] hover:to-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                                  >
-                                    <BedIcon className="w-4 h-4" />
-                                    <span>Manage Rooms & Beds</span>
-                                  </button>
-
-                                  {/* View Tenants in this PG */}
-                                  <button
-                                    onClick={() => {
-                                      setSelectedProperty(p.id);
-                                      setActiveTab('tenants');
-                                    }}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-[#7C3AED] rounded-xl text-xs font-bold transition-all cursor-pointer"
-                                  >
-                                    <Users className="w-4 h-4" />
-                                    <span>View Tenants ({p.occupied || 0})</span>
-                                  </button>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                  {/* Edit Property */}
-                                  <button
-                                    onClick={() => {
-                                      setEditingItem(p);
-                                      setFormData(p);
-                                      setModalType('property');
-                                    }}
-                                    title="Edit Property Information"
-                                    className="flex items-center gap-1.5 px-3 py-2 text-slate-600 hover:text-[#7C3AED] hover:bg-purple-50 rounded-xl text-xs font-bold transition-all cursor-pointer border border-slate-200"
-                                  >
-                                    <Edit3 className="w-3.5 h-3.5" />
-                                    <span>Edit</span>
-                                  </button>
-
-                                  {/* Delete Property */}
-                                  <button
-                                    onClick={() => handleDeleteProperty(p.id, p.name)}
-                                    title="Delete Property"
-                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer border border-slate-200"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              </div>
+                            <div className="text-base font-bold text-[#0F172A]">No properties yet</div>
+                            <p className="text-xs text-[#64748B] leading-relaxed">
+                              {searchQuery ? 'No properties matched your search term.' : 'You have a clean slate! Click "Add Property" above to create and manage your original PG or Hostel.'}
+                            </p>
+                            {!searchQuery && (
+                              <button
+                                onClick={() => {
+                                  setEditingItem(null);
+                                  setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
+                                  setModalType('property');
+                                }}
+                                className="mt-1 flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100"
+                              >
+                                <Plus className="w-4 h-4" />
+                                <span>Add First Property</span>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredProperties.map((p, index) => (
+                        <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors">
+                          <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={p.image || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600'} 
+                              alt={p.name} 
+                              className="w-10 h-10 rounded-xl object-cover border border-[#E2E8F0] shadow-xs flex-shrink-0" 
+                            />
+                            <div className="min-w-0">
+                              <span className="font-bold text-[#0F172A] block">{p.name}</span>
+                              <span className="text-[11px] text-[#64748B] block truncate max-w-[220px]" title={p.address || p.location}>
+                                {p.address || p.location || 'Address not set'}
+                              </span>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })
+                        </td>
+                        <td className="py-4 px-6 font-medium text-[#475569]">
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-[#6366F1] flex-shrink-0" />
+                            <span>{p.city || p.location}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6 text-[#64748B]">{p.type}</td>
+                        <td className="py-4 px-6 text-[#64748B]">{p.gender}</td>
+                        <td className="py-4 px-6 font-bold text-[#0F172A]">{p.totalBeds}</td>
+                        <td className="py-4 px-6 font-semibold text-[#6366F1]">{p.occupied}</td>
+                        <td className="py-4 px-6 text-[#64748B]">{p.vacant}</td>
+                        <td className="py-4 px-6">
+                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
+                            p.status === 'Active' 
+                              ? 'bg-emerald-50 text-emerald-600' 
+                              : 'bg-red-50 text-red-600'
+                          }`}>
+                            {p.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingItem(p);
+                                setFormData(p);
+                                setModalType('property');
+                              }}
+                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProperty(p.id, p.name)}
+                              className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
                   )}
-                </div>
-              ) : (
-                /* Compact Table View (Fallback for 10+ properties) */
-                <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[11px] tracking-wider">
-                        <tr>
-                          <th className="py-4 px-6 w-12 text-center">#</th>
-                          <th className="py-4 px-6">Hostel & Location</th>
-                          <th className="py-4 px-6">City</th>
-                          <th className="py-4 px-6">Type & Gender</th>
-                          <th className="py-4 px-6">Live Bed Capacity</th>
-                          <th className="py-4 px-6">Status</th>
-                          <th className="py-4 px-6 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {filteredProperties.map((p, index) => {
-                          const occPercent = p.totalBeds > 0 ? Math.round(((p.occupied || 0) / p.totalBeds) * 100) : 0;
-                          return (
-                            <tr key={p.id} className="hover:bg-purple-50/30 transition-colors group">
-                              <td className="py-4 px-6 text-slate-400 font-bold text-center">{index + 1}</td>
-                              <td className="py-4 px-6">
-                                <div className="flex items-center gap-3">
-                                  <img 
-                                    src={p.image || '/staynest_header_building.jpg'} 
-                                    alt={p.name} 
-                                    className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0" 
-                                  />
-                                  <div>
-                                    <span className="font-extrabold text-sm text-slate-900 block">{p.name}</span>
-                                    <span className="text-[11px] text-slate-500 block truncate max-w-[220px]">
-                                      {p.address || p.location}
-                                    </span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6 font-semibold text-slate-700">{p.city || p.location}</td>
-                              <td className="py-4 px-6">
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 mr-1.5">{p.type}</span>
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700">{p.gender}</span>
-                              </td>
-                              <td className="py-4 px-6 font-bold">
-                                <span className="text-[#7C3AED]">{p.occupied || 0}</span> / {p.totalBeds} Beds ({occPercent}%)
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className="px-2.5 py-1 rounded-full font-bold text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  ● {p.status}
-                                </span>
-                              </td>
-                              <td className="py-4 px-6 text-right">
-                                <div className="flex items-center justify-end gap-1.5">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedProperty(p.id);
-                                      setActiveTab('rooms');
-                                    }}
-                                    className="px-2.5 py-1 bg-purple-50 text-[#7C3AED] rounded-lg font-bold text-xs"
-                                  >
-                                    Rooms
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setEditingItem(p);
-                                      setFormData(p);
-                                      setModalType('property');
-                                    }}
-                                    className="p-1.5 text-slate-400 hover:text-purple-600"
-                                  >
-                                    <Edit3 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+                </tbody>
+                </table>
+              </div>
             </div>
           )}
 

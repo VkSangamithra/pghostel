@@ -15,22 +15,13 @@
   box-sizing: border-box;
 }
 
-.sn-portal-container h1,
-.sn-portal-container h2,
-.sn-portal-container h3,
-.sn-portal-container h4,
-.sn-portal-container h5,
-.sn-portal-container h6 {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-}
-
 /* ========================================================= */
 /* PREMIUM COLLAPSIBLE SIDEBAR (Exact Match to Reference)    */
 /* ========================================================= */
 .sn-sidebar {
-  width: 292px;
-  background-color: #F8F9FE;
-  border-right: 1px solid #ECE7FE;
+  width: 270px;
+  background-color: #ffffff;
+  border-right: 1px solid #F1F5F9;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -45,42 +36,90 @@
   width: 82px;
 }
 
-/* ========================================================= */
-/* MODERN RICH PURPLE HEADER BANNER (Exact Match to Image 1) */
-/* ========================================================= */
-.sn-header-banner {
-  background: linear-gradient(145deg, #1A0733 0%, #350866 40%, #581C87 80%, #6D28D9 100%);
-  position: relative;
-  overflow: hidden;
-  min-height: 128px;
+/* Brand Card Top Container */
+.sn-brand-card-container {
+  padding: 1.15rem 0.9rem 0.75rem 0.9rem;
 }
 
-.sn-sidebar.collapsed .sn-header-banner {
-  min-height: 76px;
-  background: transparent;
-}
-
-/* Nav List Container */
-.sn-nav-list {
-  padding: 0.5rem 0.85rem;
+.sn-brand-card {
+  background: linear-gradient(135deg, #FAF8FF 0%, #F5F2FE 100%);
+  border: 1px solid #ECE7FE;
+  border-radius: 20px;
+  padding: 0.75rem 0.85rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  overflow-y: auto;
-  overflow-x: hidden;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.04);
+  transition: all 0.2s ease;
 }
 
-.sn-sidebar.collapsed .sn-nav-list {
-  padding: 0.5rem 0.4rem;
+.sn-sidebar.collapsed .sn-brand-card-container {
+  padding: 1.15rem 0.6rem 0.75rem 0.6rem;
+  display: flex;
+  justify-content: center;
+}
+
+.sn-sidebar.collapsed .sn-brand-card {
+  padding: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Brand Logo Squircle */
+.sn-brand-logo-sq {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1.5px solid #EDE7FE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7C3AED;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.08);
+  flex-shrink: 0;
+}
+
+.sn-brand-title-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.sn-brand-sub-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #7C3AED;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.sn-brand-sub-badge .sn-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10B981;
 }
 
 /* Section Header Labels */
-.sn-nav-section-title-wrap {
-  padding: 12px 10px 4px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.sn-nav-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #94A3B8;
+  text-transform: uppercase;
+  padding: 12px 14px 6px 14px;
 }
 
 .sn-nav-section-divider {
@@ -91,72 +130,107 @@
   border-radius: 2px;
 }
 
-/* ========================================================= */
-/* MODERN NAVIGATION PILL CARDS (Exact Match to Image 1)     */
-/* ========================================================= */
-.sn-nav-card {
+/* Nav List */
+.sn-nav-list {
+  padding: 0.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sn-sidebar.collapsed .sn-nav-list {
+  padding: 0.25rem 0.4rem;
+  align-items: center;
+}
+
+/* Navigation Button Item */
+.sn-nav-btn {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.85rem;
-  border-radius: 18px;
-  background: #FFFFFF;
-  border: 1px solid rgba(230, 235, 245, 0.8);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+  gap: 0.85rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
+  transition: all 0.18s ease;
 }
 
-.sn-nav-card:hover:not(.active) {
-  transform: translateY(-1px);
+/* Active Item Style */
+.sn-nav-btn.active {
+  background-color: #F6F2FF;
+}
+
+.sn-nav-btn.active .sn-active-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 28px;
+  background-color: #7C3AED;
+  border-radius: 0 4px 4px 0;
+}
+
+.sn-nav-btn.active .sn-item-label {
+  color: #6D28D9;
+  font-weight: 700;
+}
+
+.sn-nav-btn.active .sn-icon-sq {
+  background: #7C3AED;
+  color: #ffffff;
+  border-color: #7C3AED;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+}
+
+/* Inactive Item Style */
+.sn-nav-btn:not(.active):hover {
+  background-color: #F8FAFC;
+}
+
+.sn-nav-btn:not(.active) .sn-item-label {
+  color: #475569;
+  font-weight: 600;
+}
+
+.sn-nav-btn:not(.active):hover .sn-item-label {
+  color: #0F172A;
+}
+
+.sn-nav-btn:not(.active):hover .sn-icon-sq {
+  background-color: #F5F3FF;
   border-color: #DDD6FE;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
-}
-
-.sn-nav-card.active {
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 50%, #6D28D9 100%);
-  border: 1px solid #7C3AED;
-  box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.42), 0 2px 6px -1px rgba(124, 58, 237, 0.2);
-  color: #FFFFFF;
+  color: #7C3AED;
 }
 
 /* Squircle Icon Container */
-.sn-nav-icon-sq {
-  width: 36px;
-  height: 36px;
+.sn-icon-sq {
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background: #EDE9FE;
-  color: #7C3AED;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #64748B;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
-.sn-nav-icon-sq.active {
-  background: rgba(255, 255, 255, 0.22);
-  color: #FFFFFF;
-  backdrop-filter: blur(4px);
-}
-
-.sn-nav-card-label {
-  font-size: 0.885rem;
-  font-weight: 700;
-  color: #0F172A;
-  letter-spacing: -0.01em;
+.sn-item-label {
+  font-size: 0.875rem;
   transition: color 0.18s ease;
   white-space: nowrap;
 }
 
-.sn-nav-card-label.active {
-  color: #FFFFFF;
-  font-weight: 800;
-}
-
-/* Badge Pill */
+/* Badge Pill (like Sales/Leads '1' badge in image 1) */
 .sn-item-badge {
   min-width: 20px;
   height: 20px;
@@ -169,94 +243,111 @@
   align-items: center;
   justify-content: center;
   padding: 0 6px;
+  margin-left: auto;
 }
 
-/* Green Indicator Dot */
+/* Green Indicator Dot (like Attendance & Leaves dot in image 1) */
 .sn-green-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background-color: #10B981;
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+  margin-left: auto;
 }
 
-/* ========================================================= */
-/* BOTTOM ACTIONS & PROFILE CARD (Exact Match to Image 1)    */
-/* ========================================================= */
-.sn-sidebar-bottom-modern {
-  padding: 0.75rem 0.85rem 0.5rem 0.85rem;
-  border-top: 1px solid rgba(226, 232, 240, 0.7);
+/* Collapsed Item Overrides (Exact Match to Image 3) */
+.sn-sidebar.collapsed .sn-nav-btn {
+  width: 54px;
+  height: 48px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto;
+}
+
+.sn-sidebar.collapsed .sn-nav-btn.active {
+  background-color: transparent;
+}
+
+.sn-sidebar.collapsed .sn-nav-btn.active .sn-icon-sq-wrap {
+  width: 54px;
+  height: 48px;
+  border-radius: 16px;
+  background-color: #F6F2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sn-sidebar.collapsed .sn-green-dot {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0;
+}
+
+.sn-sidebar.collapsed .sn-item-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  margin-left: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Bottom Profile Card & Footer */
+.sn-sidebar-bottom {
+  padding: 0.85rem 0.85rem;
+  border-top: 1px solid #F1F5F9;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  background: #FFFFFF;
+  gap: 0.65rem;
+  background-color: #ffffff;
 }
 
-.sn-sidebar.collapsed .sn-sidebar-bottom-modern {
+.sn-sidebar.collapsed .sn-sidebar-bottom {
   padding: 0.85rem 0.4rem;
   align-items: center;
 }
 
-.sn-back-website-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1rem;
-  border-radius: 16px;
-  background: #F3EEFF;
-  border: 1.5px solid #E4D8FF;
-  color: #6D28D9;
-  font-weight: 700;
-  font-size: 0.825rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sn-back-website-btn:hover {
-  background: #EDE9FE;
-  border-color: #C4B5FD;
-  color: #5B21B6;
-  transform: translateY(-1px);
-}
-
-.sn-profile-card-modern {
-  background: #FFFFFF;
+.sn-profile-card {
+  background: #FAFAFE;
   border: 1px solid #ECE7FE;
-  border-radius: 20px;
-  padding: 0.65rem 0.85rem;
+  border-radius: 18px;
+  padding: 0.65rem 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.04);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.03);
+  transition: all 0.2s ease;
 }
 
-.sn-profile-avatar-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
-  color: #FFFFFF;
+.sn-profile-avatar-sq {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: #7C3AED;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 0.825rem;
   position: relative;
   flex-shrink: 0;
   box-shadow: 0 3px 8px rgba(124, 58, 237, 0.3);
 }
 
-.sn-profile-online-badge {
+.sn-profile-online-dot {
   position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 9px;
-  height: 9px;
-  background-color: #10B981;
-  border: 2px solid #FFFFFF;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
 }
 
 .sn-back-btn {
