@@ -1532,3 +1532,125 @@
   color: #DC2626;
 }
 
+/* ========================================================= */
+/* DASHBOARD OPTIMIZED LAYOUT & COMPONENT CLASSES            */
+/* ========================================================= */
+
+.db-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .db-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.db-chart-card {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #EDE9FE;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 360px;
+  padding: 1.5rem;
+}
+
+.db-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.db-chart-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.db-chart-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748B;
+  margin: 0.2rem 0 0 0;
+}
+
+.db-recent-card {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #EDE9FE;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 290px;
+  height: 100%;
+}
+
+.db-recent-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  flex-shrink: 0;
+}
+
+.db-recent-btn-view {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7C3AED;
+  background-color: #FAF5FF;
+  border: 1px solid #EDE9FE;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+.db-recent-btn-view:hover {
+  background-color: #F3E8FF;
+  color: #6D28D9;
+}
+
+.db-empty-state-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.db-empty-icon-sq {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #059669;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+}
+

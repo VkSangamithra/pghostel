@@ -1108,17 +1108,16 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                   <p className="pm-header-subtitle">Overview of all your PG properties</p>
                 </div>
                 <div className="pm-filters-wrapper">
-                  <div className="pm-select-box">
-                    <div className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-semibold text-[#475569] shadow-2xs">
-                      <Calendar className="w-3.5 h-3.5 text-[#7C3AED]" />
-                      <span>Oct 2026</span>
-                    </div>
+                  <div className="flex items-center gap-2 px-3.5 h-[42px] bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] shadow-2xs">
+                    <Calendar className="w-3.5 h-3.5 text-[#7C3AED]" />
+                    <span>Oct 2026</span>
                   </div>
                   <div className="pm-select-box">
                     <select 
                       value={selectedProperty}
                       onChange={(e) => setSelectedProperty(e.target.value)}
                       className="pm-select"
+                      style={{ height: '42px', minWidth: '150px' }}
                     >
                       <option value="all">All Properties</option>
                       {properties.map(p => (
@@ -1130,9 +1129,9 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* 4 Summary Stat Cards - Matching Unified Structure */}
+              {/* 4 Summary Stat Cards - Exactly 4 in one row with responsive grid */}
               <div className="pm-cards-grid">
-                {/* Total Tenants */}
+                {/* 1. Total Tenants */}
                 <div className="pm-stat-card pm-card-hostels">
                   <div className="pm-card-main">
                     <div className="pm-card-icon-box pm-card-icon-purple">
@@ -1142,7 +1141,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                       <span className="pm-card-label">Total Tenants</span>
                       <div className="pm-card-value">{summary.totalTenants ?? tenants.length}</div>
                       <div className="pm-card-sub pm-card-sub-green">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0"></span>
                         <span>Active Residents</span>
                       </div>
                     </div>
@@ -1150,7 +1149,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                   <Users className="pm-card-watermark text-purple-600" />
                 </div>
 
-                {/* Occupied Beds */}
+                {/* 2. Occupied Beds */}
                 <div className="pm-stat-card pm-card-inventory">
                   <div className="pm-card-main">
                     <div className="pm-card-icon-box pm-card-icon-blue">
@@ -1159,16 +1158,17 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                     <div className="pm-card-content">
                       <span className="pm-card-label">Occupied Beds</span>
                       <div className="pm-card-value">
-                        {summary.occupiedBeds ?? 0} <span className="text-sm text-[#64748B] font-semibold">/ {summary.totalBeds ?? 0}</span>
+                        {summary.occupiedBeds ?? 0} <span className="text-xs text-[#64748B] font-semibold">/ {summary.totalBeds ?? 0}</span>
                       </div>
                       <div className="pm-card-sub pm-card-sub-gray">
                         {summary.totalBeds > 0 ? Math.round(((summary.occupiedBeds ?? 0) / summary.totalBeds) * 100) : (summary.occupancyPercentage ?? 0)}% Live Occupancy
                       </div>
                     </div>
                   </div>
+                  <BedIcon className="pm-card-watermark text-blue-600" />
                 </div>
 
-                {/* Monthly Revenue */}
+                {/* 3. Monthly Revenue */}
                 <div className="pm-stat-card pm-card-occupancy">
                   <div className="pm-card-main">
                     <div className="pm-card-icon-box pm-card-icon-orange">
@@ -1180,14 +1180,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                         ₹ {(summary.monthlyRevenue ?? financeSummary.totalCollections ?? 0).toLocaleString('en-IN')}
                       </div>
                       <div className="pm-card-sub pm-card-sub-green">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0"></span>
                         <span>Collected this month</span>
                       </div>
                     </div>
                   </div>
+                  <IndianRupee className="pm-card-watermark text-amber-600" />
                 </div>
 
-                {/* Pending Issues */}
+                {/* 4. Pending Issues */}
                 <div className="pm-stat-card pm-card-vacant">
                   <div className="pm-card-main">
                     <div className="pm-card-icon-box pm-card-icon-green">
@@ -1207,14 +1208,14 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* 2 Main Visual Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 2 Main Visual Charts - Equal Width & Height */}
+              <div className="db-grid-2col">
                 {/* Occupancy Rate Bar Chart */}
-                <div className="pm-table-card p-6">
-                  <div className="flex items-center justify-between mb-5">
+                <div className="db-chart-card">
+                  <div className="db-chart-header">
                     <div>
-                      <h3 className="font-bold text-[#0F172A] text-base">Occupancy Rate</h3>
-                      <p className="text-xs text-[#64748B]">Per property bed utilization</p>
+                      <h3 className="db-chart-title">Occupancy Rate</h3>
+                      <p className="db-chart-subtitle">Per property bed utilization</p>
                     </div>
                     <div className="flex items-center gap-4 text-xs font-semibold">
                       <div className="flex items-center gap-1.5">
@@ -1230,7 +1231,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
                   {/* Dynamic Real Bar Chart: Property & Floor Bed Utilization */}
                   {(() => {
-                    const activePropName = properties[0]?.name || 'vk pg';
+                    const activePropName = properties[0]?.name || 'vkpg';
                     const totalBeds = summary.totalBeds || properties[0]?.totalBeds || 30;
                     const occupiedBeds = summary.occupiedBeds || properties[0]?.occupied || 1;
                     const overallOccPercent = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 3;
@@ -1279,37 +1280,49 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                         ];
 
                     return (
-                      <div className="h-56 w-full flex items-end justify-between gap-4 pt-6 px-4 border-b border-[#F1F5F9]">
-                        {bars.map((bar, i) => (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                            <span className="text-[10px] font-bold text-[#7C3AED] opacity-0 group-hover:opacity-100 transition-opacity">
-                              {bar.occ}%
-                            </span>
-                            <div className="w-10 rounded-t-xl overflow-hidden flex flex-col justify-end h-full">
-                              <div 
-                                style={{ height: `${bar.vac}%` }} 
-                                className="w-full bg-[#EDE9FE] transition-all group-hover:bg-[#DDD6FE]" 
-                              />
-                              <div 
-                                style={{ height: `${Math.max(bar.occ, 4)}%` }} 
-                                className="w-full bg-[#7C3AED] transition-all group-hover:bg-[#6D28D9]" 
-                              />
+                      <div className="flex-1 w-full flex flex-col justify-end">
+                        {/* Bars Row */}
+                        <div className="h-44 w-full flex items-end justify-between gap-3 px-2">
+                          {bars.map((bar, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center h-full justify-end group">
+                              <span className="text-[11px] font-bold text-[#7C3AED] mb-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {bar.occ}%
+                              </span>
+                              <div className="w-9 sm:w-10 rounded-t-xl overflow-hidden flex flex-col justify-end h-36 bg-[#EDE9FE]">
+                                <div 
+                                  style={{ height: `${Math.max(bar.occ, 4)}%` }} 
+                                  className="w-full bg-[#7C3AED] transition-all group-hover:bg-[#6D28D9] rounded-t-xl" 
+                                />
+                              </div>
                             </div>
-                            <span className="text-xs font-semibold text-[#0F172A] truncate max-w-[85px]">{bar.label}</span>
-                            <span className="text-[10px] text-[#94A3B8] truncate">{bar.sublabel}</span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        {/* Horizontal Baseline */}
+                        <div className="w-full h-px bg-slate-100 my-2" />
+                        {/* Labels row directly beneath bars */}
+                        <div className="w-full flex items-start justify-between gap-3 px-2">
+                          {bars.map((bar, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center text-center overflow-hidden">
+                              <span className="text-xs font-bold text-[#0F172A] truncate w-full" title={bar.label}>
+                                {bar.label}
+                              </span>
+                              <span className="text-[10px] font-medium text-[#64748B] truncate w-full mt-0.5" title={bar.sublabel}>
+                                {bar.sublabel}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     );
                   })()}
                 </div>
 
                 {/* Revenue Trend Spline Chart */}
-                <div className="pm-table-card p-6">
-                  <div className="flex items-center justify-between mb-5">
+                <div className="db-chart-card">
+                  <div className="db-chart-header">
                     <div>
-                      <h3 className="font-bold text-[#0F172A] text-base">Revenue Trend</h3>
-                      <p className="text-xs text-[#64748B]">Monthly collections growth</p>
+                      <h3 className="db-chart-title">Revenue Trend</h3>
+                      <p className="db-chart-subtitle">Monthly collections growth</p>
                     </div>
                     <span className="text-xs font-bold text-[#7C3AED] bg-purple-50 border border-purple-100 px-3 py-1.5 rounded-xl shadow-2xs">
                       ₹ {(summary.monthlyRevenue || financeSummary.totalCollections || 8000).toLocaleString('en-IN')} in Oct 2026
@@ -1317,47 +1330,53 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                   </div>
 
                   {/* SVG Line / Area Graph */}
-                  <div className="h-56 w-full relative pt-4">
-                    <svg className="w-full h-full overflow-visible" viewBox="0 0 500 160">
-                      <defs>
-                        <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#A855F7" stopOpacity="0.35" />
-                          <stop offset="100%" stopColor="#A855F7" stopOpacity="0.0" />
-                        </linearGradient>
-                      </defs>
-                      {/* Grid Lines */}
-                      <line x1="0" y1="35" x2="500" y2="35" stroke="#F1F5F9" strokeDasharray="3 3" />
-                      <line x1="0" y1="75" x2="500" y2="75" stroke="#F1F5F9" strokeDasharray="3 3" />
-                      <line x1="0" y1="115" x2="500" y2="115" stroke="#F1F5F9" strokeDasharray="3 3" />
+                  <div className="flex-1 w-full flex flex-col justify-between pt-1">
+                    <div className="w-full h-44 relative">
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 500 145" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.25" />
+                            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+                        {/* Grid Lines */}
+                        <line x1="0" y1="25" x2="500" y2="25" stroke="#F1F5F9" strokeDasharray="4 4" strokeWidth="1" />
+                        <line x1="0" y1="65" x2="500" y2="65" stroke="#F1F5F9" strokeDasharray="4 4" strokeWidth="1" />
+                        <line x1="0" y1="105" x2="500" y2="105" stroke="#F1F5F9" strokeDasharray="4 4" strokeWidth="1" />
 
-                      {/* Area Fill */}
-                      <path
-                        d="M 20 140 L 130 140 L 240 140 L 350 140 Q 410 135, 480 35 L 480 145 L 20 145 Z"
-                        fill="url(#purpleGrad)"
-                      />
+                        {/* Area Fill */}
+                        <path
+                          d="M 20 125 L 130 125 L 240 125 L 350 125 Q 410 120, 475 28 L 475 130 L 20 130 Z"
+                          fill="url(#purpleGrad)"
+                        />
 
-                      {/* Spline Curve */}
-                      <path
-                        d="M 20 140 L 130 140 L 240 140 L 350 140 Q 410 135, 480 35"
-                        fill="none"
-                        stroke="#7C3AED"
-                        strokeWidth="3.5"
-                        strokeLinecap="round"
-                      />
+                        {/* Spline Curve */}
+                        <path
+                          d="M 20 125 L 130 125 L 240 125 L 350 125 Q 410 120, 475 28"
+                          fill="none"
+                          stroke="#7C3AED"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
 
-                      {/* Data Dots */}
-                      <circle cx="20" cy="140" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
-                      <circle cx="130" cy="140" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
-                      <circle cx="240" cy="140" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
-                      <circle cx="350" cy="140" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
-                      <circle cx="480" cy="35" r="6" fill="#6D28D9" stroke="#FFFFFF" strokeWidth="2.5" />
+                        {/* Data Dots */}
+                        <circle cx="20" cy="125" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
+                        <circle cx="130" cy="125" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
+                        <circle cx="240" cy="125" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
+                        <circle cx="350" cy="125" r="4" fill="#7C3AED" stroke="#FFFFFF" strokeWidth="2" />
+                        <circle cx="475" cy="28" r="6" fill="#6D28D9" stroke="#FFFFFF" strokeWidth="2.5" />
 
-                      {/* Data Value Label */}
-                      <text x="390" y="22" fill="#6D28D9" fontSize="13" fontWeight="bold">
-                        ₹{(summary.monthlyRevenue || financeSummary.totalCollections || 8000).toLocaleString('en-IN')}
-                      </text>
-                    </svg>
-                    <div className="flex justify-between text-xs text-[#94A3B8] font-semibold mt-2 px-3">
+                        {/* Non-overlapping Callout Badge */}
+                        <rect x="375" y="6" width="82" height="22" rx="6" fill="#FAF5FF" stroke="#DDD6FE" strokeWidth="1" />
+                        <text x="416" y="21" textAnchor="middle" fill="#7C3AED" fontSize="11" fontWeight="800">
+                          ₹{(summary.monthlyRevenue || financeSummary.totalCollections || 8000).toLocaleString('en-IN')}
+                        </text>
+                      </svg>
+                    </div>
+                    {/* Horizontal Baseline */}
+                    <div className="w-full h-px bg-slate-100 my-2" />
+                    {/* X-axis labels */}
+                    <div className="w-full flex justify-between text-xs text-[#94A3B8] font-semibold px-2">
                       <span>Jun (Pre-launch)</span>
                       <span>Jul</span>
                       <span>Aug</span>
@@ -1368,61 +1387,65 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* 2 Bottom Tables: Recent Tenants & Recent Complaints */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 2 Bottom Tables: Recent Tenants & Recent Complaints - Equal Height */}
+              <div className="db-grid-2col">
                 {/* Recent Tenants */}
-                <div className="pm-table-card">
-                  <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex items-center justify-between bg-white">
+                <div className="db-recent-card">
+                  <div className="db-recent-header">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                      <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
                         <Users className="w-4 h-4 text-[#7C3AED]" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-[#0F172A] text-sm">Recent Tenants</h3>
-                        <p className="text-[11px] text-[#64748B]">Latest resident admissions</p>
+                        <h3 className="font-bold text-[#0F172A] text-sm leading-tight">Recent Tenants</h3>
+                        <p className="text-[11px] text-[#64748B] mt-0.5">Latest resident admissions</p>
                       </div>
                     </div>
                     <button 
                       onClick={() => setActiveTab('tenants')} 
-                      className="text-xs font-bold text-[#7C3AED] hover:text-[#6D28D9] bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      className="db-recent-btn-view"
                     >
                       View All
                     </button>
                   </div>
-                  <div className="pm-table-scroll-container">
-                    <table className="w-full text-left border-collapse">
+                  <div className="pm-table-scroll-container flex-1">
+                    <table className="w-full text-left border-collapse table-fixed">
                       <thead className="pm-table-thead">
                         <tr>
-                          <th className="pm-table-th px-4">Resident</th>
-                          <th className="pm-table-th px-4">Property</th>
-                          <th className="pm-table-th px-4">Room & Bed</th>
-                          <th className="pm-table-th px-4">Check-In</th>
-                          <th className="pm-table-th px-4 text-right">Status</th>
+                          <th className="pm-table-th" style={{ width: '30%', paddingLeft: '1.25rem' }}>Resident</th>
+                          <th className="pm-table-th" style={{ width: '18%', paddingLeft: '0.75rem' }}>Property</th>
+                          <th className="pm-table-th" style={{ width: '22%', paddingLeft: '0.75rem' }}>Room & Bed</th>
+                          <th className="pm-table-th" style={{ width: '16%', paddingLeft: '0.75rem' }}>Check-In</th>
+                          <th className="pm-table-th text-center" style={{ width: '14%', paddingRight: '1.25rem' }}>Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {tenants.slice(0, 3).map((t, idx) => (
                           <tr key={idx} className="pm-table-row">
-                            <td className="px-4 py-3.5">
+                            <td style={{ width: '30%', paddingLeft: '1.25rem' }}>
                               <div className="pm-prop-name-box">
                                 <span className="pm-prop-title">{t.name}</span>
-                                <span className="pm-prop-sub">{t.contact || t.phone || '9950087570'}</span>
+                                <span className="pm-prop-sub">{t.contact || t.phone || '9345542304'}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3.5 text-xs font-semibold text-[#475569]">
-                              {t.property || properties[0]?.name || 'vk pg'}
+                            <td style={{ width: '18%', paddingLeft: '0.75rem' }} className="text-xs font-semibold text-[#475569]">
+                              {t.property || properties[0]?.name || 'vkpg'}
                             </td>
-                            <td className="px-4 py-3.5">
-                              <span className="px-2.5 py-1 bg-purple-50 text-[#7C3AED] rounded-lg text-xs font-bold border border-purple-100">
+                            <td style={{ width: '22%', paddingLeft: '0.75rem' }}>
+                              <span className="inline-block px-2.5 py-1 bg-purple-50 text-[#7C3AED] rounded-lg text-xs font-bold border border-purple-100 whitespace-nowrap">
                                 {t.roomBed && t.roomBed !== 'Unassigned Bed' ? t.roomBed : 'Room 101 • Bed 1'}
                               </span>
                             </td>
-                            <td className="px-4 py-3.5 text-xs text-[#64748B]">{t.checkInDate || '31 Oct 2026'}</td>
-                            <td className="px-4 py-3.5 text-right">
-                              <span className="pm-status-pill pm-status-active">
-                                <span className="pm-status-dot pm-dot-active"></span>
-                                <span>{t.status || 'Checked In'}</span>
-                              </span>
+                            <td style={{ width: '16%', paddingLeft: '0.75rem' }} className="text-xs font-medium text-[#64748B]">
+                              {t.checkInDate || '31 Oct 2026'}
+                            </td>
+                            <td style={{ width: '14%', paddingRight: '1.25rem' }}>
+                              <div className="flex justify-center">
+                                <span className="pm-status-pill pm-status-active">
+                                  <span className="pm-status-dot pm-dot-active"></span>
+                                  <span>{t.status || 'Checked In'}</span>
+                                </span>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -1432,56 +1455,58 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
 
                 {/* Recent Complaints */}
-                <div className="pm-table-card">
-                  <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex items-center justify-between bg-white">
+                <div className="db-recent-card">
+                  <div className="db-recent-header">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                         <AlertTriangle className="w-4 h-4 text-emerald-600" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-[#0F172A] text-sm">Recent Complaints</h3>
-                        <p className="text-[11px] text-[#64748B]">Maintenance & ticket status</p>
+                        <h3 className="font-bold text-[#0F172A] text-sm leading-tight">Recent Complaints</h3>
+                        <p className="text-[11px] text-[#64748B] mt-0.5">Maintenance & ticket status</p>
                       </div>
                     </div>
                     <button 
                       onClick={() => setActiveTab('complaints')} 
-                      className="text-xs font-bold text-[#7C3AED] hover:text-[#6D28D9] bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      className="db-recent-btn-view"
                     >
                       View All
                     </button>
                   </div>
                   {complaints.length === 0 ? (
-                    <div className="p-8 text-center flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 border border-emerald-100 shadow-2xs">
-                        <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                    <div className="db-empty-state-box">
+                      <div className="db-empty-icon-sq">
+                        <CheckCircle2 className="w-6 h-6 text-[#059669]" />
                       </div>
-                      <h4 className="font-bold text-sm text-[#0F172A]">All Clear — No Pending Complaints</h4>
-                      <p className="text-xs text-[#64748B] mt-1 max-w-sm">
-                        Zero maintenance tickets or tenant issues logged for {properties[0]?.name || 'vk pg'}. Everything is running smoothly!
+                      <h4 className="font-bold text-sm text-[#0F172A] mb-1">All Clear — No Pending Complaints</h4>
+                      <p className="text-xs text-[#64748B] max-w-xs leading-relaxed">
+                        Zero maintenance tickets or tenant issues logged for {properties[0]?.name || 'vkpg'}. Everything is running smoothly!
                       </p>
                     </div>
                   ) : (
-                    <div className="pm-table-scroll-container">
-                      <table className="w-full text-left border-collapse">
+                    <div className="pm-table-scroll-container flex-1">
+                      <table className="w-full text-left border-collapse table-fixed">
                         <thead className="pm-table-thead">
                           <tr>
-                            <th className="pm-table-th px-4">Title</th>
-                            <th className="pm-table-th px-4">Property</th>
-                            <th className="pm-table-th px-4">Priority</th>
-                            <th className="pm-table-th px-4 text-right">Status</th>
+                            <th className="pm-table-th" style={{ width: '40%', paddingLeft: '1.25rem' }}>Title</th>
+                            <th className="pm-table-th" style={{ width: '25%', paddingLeft: '0.75rem' }}>Property</th>
+                            <th className="pm-table-th" style={{ width: '18%', paddingLeft: '0.75rem' }}>Priority</th>
+                            <th className="pm-table-th text-center" style={{ width: '17%', paddingRight: '1.25rem' }}>Status</th>
                           </tr>
                         </thead>
                         <tbody>
                           {complaints.slice(0, 3).map((c, idx) => (
                             <tr key={idx} className="pm-table-row">
-                              <td className="px-4 py-3.5">
+                              <td style={{ width: '40%', paddingLeft: '1.25rem' }}>
                                 <div className="pm-prop-name-box">
                                   <span className="pm-prop-title">{c.title}</span>
                                   <span className="pm-prop-sub">{c.tenant || 'Resident'}</span>
                                 </div>
                               </td>
-                              <td className="px-4 py-3.5 text-xs font-semibold text-[#475569]">{c.property}</td>
-                              <td className="px-4 py-3.5">
+                              <td style={{ width: '25%', paddingLeft: '0.75rem' }} className="text-xs font-semibold text-[#475569]">
+                                {c.property}
+                              </td>
+                              <td style={{ width: '18%', paddingLeft: '0.75rem' }}>
                                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                                   c.priority === 'High' 
                                     ? 'bg-red-50 text-red-600 border border-red-100' 
@@ -1492,11 +1517,13 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                   {c.priority}
                                 </span>
                               </td>
-                              <td className="px-4 py-3.5 text-right">
-                                <span className={`pm-status-pill ${c.status === 'Resolved' ? 'pm-status-active' : 'pm-status-inactive'}`}>
-                                  <span className={`pm-status-dot ${c.status === 'Resolved' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
-                                  <span>{c.status}</span>
-                                </span>
+                              <td style={{ width: '17%', paddingRight: '1.25rem' }}>
+                                <div className="flex justify-center">
+                                  <span className={`pm-status-pill ${c.status === 'Resolved' ? 'pm-status-active' : 'pm-status-inactive'}`}>
+                                    <span className={`pm-status-dot ${c.status === 'Resolved' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                    <span>{c.status}</span>
+                                  </span>
+                                </div>
                               </td>
                             </tr>
                           ))}
