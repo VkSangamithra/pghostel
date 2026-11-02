@@ -15,6 +15,15 @@
   box-sizing: border-box;
 }
 
+.sn-portal-container h1,
+.sn-portal-container h2,
+.sn-portal-container h3,
+.sn-portal-container h4,
+.sn-portal-container h5,
+.sn-portal-container h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}
+
 /* ========================================================= */
 /* PREMIUM COLLAPSIBLE SIDEBAR (Exact Match to Reference)    */
 /* ========================================================= */
