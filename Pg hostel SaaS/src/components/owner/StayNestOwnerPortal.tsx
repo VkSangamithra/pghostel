@@ -1097,7 +1097,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 1. DASHBOARD MODULE */}
           {/* ========================================================= */}
           {activeTab === 'dashboard' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header with Title and Property Filter */}
               <div className="sn-page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1467,7 +1467,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 2. STAFF MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'staff' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1500,51 +1500,59 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </button>
               </div>
 
-              {/* Search, Filters, and Add Staff Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={`Search ${staffTab}...`}
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+              {/* Staff Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={`Search ${staffTab}...`}
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+
+                    <button
+                      onClick={() => {
+                        setEditingItem(null);
+                        setFormData({});
+                        setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>{staffTab === 'wardens' ? 'Add Warden' : 'Add Accountant'}</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      setEditingItem(null);
-                      setFormData({});
-                      setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>{staffTab === 'wardens' ? 'Add Warden' : 'Add Accountant'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Staff Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={filteredStaff.length > 0 && filteredStaff.every(s => selectedRowIds[s.id])}
@@ -1552,12 +1560,12 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Staff Member</th>
-                        <th className="py-3.5 px-4">Mobile</th>
-                        <th className="py-3.5 px-4">Assigned Property</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Credentials & Role</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Staff Member</th>
+                        <th className="py-3.5 px-6">Mobile</th>
+                        <th className="py-3.5 px-6">Assigned Property</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Credentials & Role</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1654,7 +1662,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 3. TENANT MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'tenants' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1663,62 +1671,70 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Filters & Add Tenant Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tenants..."
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+              {/* Tenant Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search tenants..."
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Properties</option>
+                      {properties.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="Checked In">Checked In</option>
+                      <option value="Checked Out">Checked Out</option>
+                    </select>
+
+                    <button
+                      onClick={() => {
+                        setEditingItem(null);
+                        setFormData({ propertyName: properties[0]?.name || 'Green Valley PG', monthlyRent: 7500 });
+                        setModalType('tenant');
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Tenant</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={selectedProperty}
-                    onChange={(e) => setSelectedProperty(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Properties</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="Checked In">Checked In</option>
-                    <option value="Checked Out">Checked Out</option>
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      setEditingItem(null);
-                      setFormData({ propertyName: properties[0]?.name || 'Green Valley PG', monthlyRent: 7500 });
-                      setModalType('tenant');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Tenant</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Tenant Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={filteredTenants.length > 0 && filteredTenants.every(t => selectedRowIds[t.id])}
@@ -1726,15 +1742,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Resident Name</th>
-                        <th className="py-3.5 px-4">Mobile</th>
-                        <th className="py-3.5 px-4">Hostel / Source</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Assigned Room & Access</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Resident Name</th>
+                        <th className="py-3.5 px-6">Mobile</th>
+                        <th className="py-3.5 px-6">Hostel / Source</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Assigned Room & Access</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#F1F5F9]">
                       {filteredTenants.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
@@ -1850,7 +1866,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 4. PROPERTY MANAGEMENT MODULE (Standard Format)           */}
           {/* ========================================================= */}
           {activeTab === 'properties' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header Card */}
               <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -1942,75 +1958,76 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Filters & Search Toolbar */}
-              <div className="bg-white p-4 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-wrap items-center justify-between gap-3">
-                <div className="relative flex-1 min-w-[260px] max-w-md">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search properties by name, city or location..."
-                    className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+              {/* Formatted Properties Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search properties by name, city or location..."
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+
+                    <select 
+                      value={propertyGenderFilter}
+                      onChange={(e) => setPropertyGenderFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Genders</option>
+                      <option value="boys">Boys Only</option>
+                      <option value="girls">Girls Only</option>
+                      <option value="co-living">Co-Living / Unisex</option>
+                    </select>
+
+                    {(searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all') && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setStatusFilter('all');
+                          setPropertyGenderFilter('all');
+                        }}
+                        className="px-3 py-1.5 text-xs font-bold text-[#6366F1] hover:bg-indigo-50 rounded-xl transition-all cursor-pointer"
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+
+                    <span className="text-xs font-medium text-[#94A3B8] hidden sm:inline ml-1">
+                      Showing <span className="font-bold text-[#0F172A]">{filteredProperties.length}</span> of {properties.length}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center flex-wrap gap-2.5">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-
-                  <select 
-                    value={propertyGenderFilter}
-                    onChange={(e) => setPropertyGenderFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
-                  >
-                    <option value="all">All Genders</option>
-                    <option value="boys">Boys Only</option>
-                    <option value="girls">Girls Only</option>
-                    <option value="co-living">Co-Living / Unisex</option>
-                  </select>
-
-                  {(searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery('');
-                        setStatusFilter('all');
-                        setPropertyGenderFilter('all');
-                      }}
-                      className="px-3 py-1.5 text-xs font-bold text-[#6366F1] hover:bg-indigo-50 rounded-xl transition-all cursor-pointer"
-                    >
-                      Clear Filters
-                    </button>
-                  )}
-
-                  <span className="text-xs font-medium text-[#94A3B8] hidden sm:inline ml-1">
-                    Showing <span className="font-bold text-[#0F172A]">{filteredProperties.length}</span> of {properties.length}
-                  </span>
-                </div>
-              </div>
-
-              {/* Formatted Properties Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
+                {/* Table Content */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={filteredProperties.length > 0 && filteredProperties.every(p => selectedRowIds[p.id])}
@@ -2018,15 +2035,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Property Name</th>
-                        <th className="py-3.5 px-4">Mobile</th>
-                        <th className="py-3.5 px-4">Location / Type</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Bed Capacity</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Property Name</th>
+                        <th className="py-3.5 px-6">Mobile</th>
+                        <th className="py-3.5 px-6">Location / Type</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Bed Capacity</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#F1F5F9]">
                       {filteredProperties.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
@@ -2035,8 +2052,8 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                         </tr>
                       ) : (
                         filteredProperties.map((p, index) => (
-                          <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                          <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors">
+                            <td className="py-4.5 px-6">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[p.id]}
@@ -2044,19 +2061,19 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                 className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="py-4.5 px-6">
                               <span className="font-bold text-[#0F172A] text-sm block">{p.name}</span>
                               <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block truncate max-w-[220px]" title={p.address || p.location}>
                                 {p.address || p.location || 'Address not configured'}
                               </span>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                            <td className="py-4.5 px-6 text-sm font-medium text-[#475569]">
                               {p.contact || p.phone || '9216781786'}
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
+                            <td className="py-4.5 px-6 text-sm font-medium text-[#475569]">
                               {p.city || p.location || 'Erode'} • {p.gender || 'Boys'} PG
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="py-4.5 px-6">
                               <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
                                 p.status === 'Active' 
                                   ? 'bg-[#D1FAE5] text-[#059669]' 
@@ -2065,7 +2082,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                 {p.status || 'Active'}
                               </span>
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="py-4.5 px-6">
                               <button
                                 onClick={() => {
                                   setSelectedProperty(p.id);
@@ -2077,7 +2094,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
+                            <td className="py-4.5 px-6 text-right">
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => {
@@ -2113,7 +2130,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 5. ROOMS & BEDS MODULE */}
           {/* ========================================================= */}
           {activeTab === 'rooms' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -2167,78 +2184,86 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </button>
               </div>
 
-              {/* Filters & Add Room Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search rooms..."
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+              {/* Rooms Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search rooms..."
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={floorFilter}
+                      onChange={(e) => setFloorFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">Floor: All Floors</option>
+                      <option value="Ground Floor">Ground Floor</option>
+                      {Array.from({ length: Math.max(1, parseInt(String((properties.find(p => p.id === selectedProperty) || properties[0])?.totalFloors || 2), 10)) }, (_, i) => {
+                        const num = i + 1;
+                        const suffix = num === 1 ? 'st' : num === 2 ? 'nd' : num === 3 ? 'rd' : 'th';
+                        return (
+                          <option key={num} value={`${num}${suffix} Floor`}>
+                            {num}{suffix} Floor
+                          </option>
+                        );
+                      })}
+                    </select>
+
+                    <select 
+                      value={roomTypeFilter}
+                      onChange={(e) => setRoomTypeFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">Room Type: All</option>
+                      <option value="Triple Sharing">Triple Sharing</option>
+                      <option value="Double Sharing">Double Sharing</option>
+                      <option value="Single Room">Single Room</option>
+                      <option value="Sharing">Sharing</option>
+                    </select>
+
+                    <button
+                      onClick={() => {
+                        const prop = properties.find(p => p.id === selectedProperty) || properties[0];
+                        setEditingItem(null);
+                        setFormData({ 
+                          propertyId: prop?.id,
+                          roomType: 'Sharing', 
+                          totalBeds: 3, 
+                          rentPerBed: 6500,
+                          floorNumber: 1
+                        });
+                        setModalType('room');
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Room</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={floorFilter}
-                    onChange={(e) => setFloorFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">Floor: All Floors</option>
-                    <option value="Ground Floor">Ground Floor</option>
-                    {Array.from({ length: Math.max(1, parseInt(String((properties.find(p => p.id === selectedProperty) || properties[0])?.totalFloors || 2), 10)) }, (_, i) => {
-                      const num = i + 1;
-                      const suffix = num === 1 ? 'st' : num === 2 ? 'nd' : num === 3 ? 'rd' : 'th';
-                      return (
-                        <option key={num} value={`${num}${suffix} Floor`}>
-                          {num}{suffix} Floor
-                        </option>
-                      );
-                    })}
-                  </select>
-
-                  <select 
-                    value={roomTypeFilter}
-                    onChange={(e) => setRoomTypeFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">Room Type: All</option>
-                    <option value="Triple Sharing">Triple Sharing</option>
-                    <option value="Double Sharing">Double Sharing</option>
-                    <option value="Single Room">Single Room</option>
-                    <option value="Sharing">Sharing</option>
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      const prop = properties.find(p => p.id === selectedProperty) || properties[0];
-                      setEditingItem(null);
-                      setFormData({ 
-                        propertyId: prop?.id,
-                        roomType: 'Sharing', 
-                        totalBeds: 3, 
-                        rentPerBed: 6500,
-                        floorNumber: 1
-                      });
-                      setModalType('room');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Room</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Rooms Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={filteredRooms.length > 0 && filteredRooms.every(r => selectedRowIds[r.id])}
@@ -2246,15 +2271,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Room Details</th>
-                        <th className="py-3.5 px-4">Floor & Sharing</th>
-                        <th className="py-3.5 px-4">Rent per Bed</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Bed Matrix</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Room Details</th>
+                        <th className="py-3.5 px-6">Floor & Sharing</th>
+                        <th className="py-3.5 px-6">Rent per Bed</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Bed Matrix</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#F1F5F9]">
                       {filteredRooms.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
@@ -2576,7 +2601,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 6. FINANCE MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'finance' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -2669,51 +2694,59 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Collections Search & Add Payment */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search payments..."
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+              {/* Collections Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search payments..."
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="Paid">Paid</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+
+                    <button
+                      onClick={() => {
+                        setEditingItem(null);
+                        setFormData({ amount: 8000, paymentMethod: 'UPI' });
+                        setModalType('payment');
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Payment</span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Pending">Pending</option>
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      setEditingItem(null);
-                      setFormData({ amount: 8000, paymentMethod: 'UPI' });
-                      setModalType('payment');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Payment</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Collections Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={collections.length > 0 && collections.every(c => selectedRowIds[c.id])}
@@ -2721,16 +2754,16 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Resident / Payer</th>
-                        <th className="py-3.5 px-4">Mobile</th>
-                        <th className="py-3.5 px-4">Property & Room</th>
-                        <th className="py-3.5 px-4">Amount</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Receipt & Invoice</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Resident / Payer</th>
+                        <th className="py-3.5 px-6">Mobile</th>
+                        <th className="py-3.5 px-6">Property & Room</th>
+                        <th className="py-3.5 px-6">Amount</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Receipt & Invoice</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#F1F5F9]">
                       {collections.length === 0 ? (
                         <tr>
                           <td colSpan={8} className="py-12 text-center text-[#94A3B8]">
@@ -2804,7 +2837,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 7. COMPLAINTS MONITORING MODULE */}
           {/* ========================================================= */}
           {activeTab === 'complaints' && (
-            <div className="space-y-6">
+            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -2813,51 +2846,59 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Filters & Add Complaint Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search complaints..."
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+              {/* Complaints Table - Unified Card Matching Reference Format */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
+                {/* Integrated Card Toolbar Header */}
+                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
+                  <div className="relative flex-1 min-w-[240px] max-w-md">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search complaints..."
+                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center flex-wrap gap-2.5">
+                    <select 
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Properties</option>
+                      {properties.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+
+                    <select 
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={selectedProperty}
-                    onChange={(e) => setSelectedProperty(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Properties</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="Open">Open</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Complaints Table - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="border-b border-slate-100 text-[#64748B] text-xs font-semibold">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
                       <tr>
-                        <th className="w-10 py-3.5 px-4">
+                        <th className="w-12 py-3.5 px-6">
                           <input 
                             type="checkbox" 
                             checked={filteredComplaints.length > 0 && filteredComplaints.every(c => selectedRowIds[c.id])}
@@ -2865,15 +2906,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                             className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
                           />
                         </th>
-                        <th className="py-3.5 px-4">Complaint Title</th>
-                        <th className="py-3.5 px-4">Mobile / Tenant</th>
-                        <th className="py-3.5 px-4">Property & Room</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4">Assigned Resolution</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
+                        <th className="py-3.5 px-6">Complaint Title</th>
+                        <th className="py-3.5 px-6">Mobile / Tenant</th>
+                        <th className="py-3.5 px-6">Property & Room</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6">Assigned Resolution</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#F1F5F9]">
                       {filteredComplaints.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
