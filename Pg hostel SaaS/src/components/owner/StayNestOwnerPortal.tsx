@@ -39,7 +39,8 @@ import {
   EyeOff,
   Upload,
   Camera,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sparkles
 } from 'lucide-react';
 import { api } from '../../services/api';
 import './StayNestOwnerPortal.css';
@@ -111,6 +112,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
   const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [propertyGenderFilter, setPropertyGenderFilter] = useState<string>('all');
 
   // Data States (Clean Slate for Original Data)
   const [summary, setSummary] = useState<any>({
@@ -614,14 +616,28 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
     });
   }, [tenants, searchQuery, statusFilter]);
 
+  const propertyStats = useMemo(() => {
+    const totalProps = properties.length;
+    const activeProps = properties.filter(p => p.status === 'Active').length;
+    const totalBeds = properties.reduce((acc, p) => acc + (Number(p.totalBeds) || 0), 0);
+    const totalOccupied = properties.reduce((acc, p) => acc + (Number(p.occupied) || 0), 0);
+    const totalVacant = properties.reduce((acc, p) => acc + (Number(p.vacant) || 0), 0);
+    const occupancyRate = totalBeds > 0 ? Math.round((totalOccupied / totalBeds) * 100) : 0;
+    return { totalProps, activeProps, totalBeds, totalOccupied, totalVacant, occupancyRate };
+  }, [properties]);
+
   const filteredProperties = useMemo(() => {
     return properties.filter(p => {
-      const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            p.location?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = !searchQuery || 
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        p.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.address?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || p.status?.toLowerCase() === statusFilter.toLowerCase();
-      return matchesSearch && matchesStatus;
+      const matchesGender = propertyGenderFilter === 'all' || p.gender?.toLowerCase() === propertyGenderFilter.toLowerCase();
+      return matchesSearch && matchesStatus && matchesGender;
     });
-  }, [properties, searchQuery, statusFilter]);
+  }, [properties, searchQuery, statusFilter, propertyGenderFilter]);
 
   const filteredRooms = useMemo(() => {
     return rooms.filter(r => {
@@ -1754,49 +1770,34 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           )}
 
           {/* ========================================================= */}
-          {/* 4. PROPERTY MANAGEMENT MODULE */}
+          {/* 4. PROPERTY MANAGEMENT MODULE (Standard Format)           */}
           {/* ========================================================= */}
           {activeTab === 'properties' && (
             <div className="space-y-6">
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              {/* Header Card */}
+              <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Property Management</h2>
-                  <p className="text-sm text-[#64748B]">Manage your PG properties and details</p>
-                </div>
-              </div>
-
-              {/* Filters & Add Property Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="relative w-80">
-                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search properties..."
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm placeholder-[#94A3B8] focus:ring-2 focus:ring-[#6366F1]"
-                  />
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-2xl font-bold text-[#0F172A] tracking-tight">
+                      Property Management
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-[#6366F1] border border-indigo-100">
+                      {properties.length} {properties.length === 1 ? 'Property' : 'Properties'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#64748B] mt-1">
+                    Manage your PG properties, live bed occupancy, and operational details
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-
                   <button
                     onClick={() => {
                       setEditingItem(null);
                       setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
                       setModalType('property');
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Property</span>
@@ -1804,115 +1805,285 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Properties Table */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-semibold">
-                    <tr>
-                      <th className="py-3.5 px-6">#</th>
-                      <th className="py-3.5 px-6">Name</th>
-                      <th className="py-3.5 px-6">Location</th>
-                      <th className="py-3.5 px-6">Type</th>
-                      <th className="py-3.5 px-6">Gender</th>
-                      <th className="py-3.5 px-6">Total Beds</th>
-                      <th className="py-3.5 px-6">Occupied</th>
-                      <th className="py-3.5 px-6">Vacant</th>
-                      <th className="py-3.5 px-6">Status</th>
-                      <th className="py-3.5 px-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#F1F5F9]">
-                    {filteredProperties.length === 0 ? (
-                      <tr>
-                        <td colSpan={10} className="py-16 px-6 text-center">
-                          <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#6366F1]">
-                              <Building2 className="w-6 h-6" />
-                            </div>
-                            <div className="text-base font-bold text-[#0F172A]">No properties yet</div>
-                            <p className="text-xs text-[#64748B] leading-relaxed">
-                              {searchQuery ? 'No properties matched your search term.' : 'You have a clean slate! Click "Add Property" above to create and manage your original PG or Hostel.'}
-                            </p>
-                            {!searchQuery && (
-                              <button
-                                onClick={() => {
-                                  setEditingItem(null);
-                                  setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
-                                  setModalType('property');
-                                }}
-                                className="mt-1 flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100"
-                              >
-                                <Plus className="w-4 h-4" />
-                                <span>Add First Property</span>
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredProperties.map((p, index) => (
-                        <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors">
-                          <td className="py-4 px-6 text-[#94A3B8] font-medium">{index + 1}</td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center gap-3">
-                            <img 
-                              src={p.image || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600'} 
-                              alt={p.name} 
-                              className="w-10 h-10 rounded-xl object-cover border border-[#E2E8F0] shadow-xs flex-shrink-0" 
-                            />
-                            <div className="min-w-0">
-                              <span className="font-bold text-[#0F172A] block">{p.name}</span>
-                              <span className="text-[11px] text-[#64748B] block truncate max-w-[220px]" title={p.address || p.location}>
-                                {p.address || p.location || 'Address not set'}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 font-medium text-[#475569]">
-                          <div className="flex items-center gap-1.5">
-                            <MapPin className="w-3.5 h-3.5 text-[#6366F1] flex-shrink-0" />
-                            <span>{p.city || p.location}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-[#64748B]">{p.type}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{p.gender}</td>
-                        <td className="py-4 px-6 font-bold text-[#0F172A]">{p.totalBeds}</td>
-                        <td className="py-4 px-6 font-semibold text-[#6366F1]">{p.occupied}</td>
-                        <td className="py-4 px-6 text-[#64748B]">{p.vacant}</td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2.5 py-1 rounded-full font-semibold text-[10px] ${
-                            p.status === 'Active' 
-                              ? 'bg-emerald-50 text-emerald-600' 
-                              : 'bg-red-50 text-red-600'
-                          }`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingItem(p);
-                                setFormData(p);
-                                setModalType('property');
-                              }}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#4F46E5] hover:bg-indigo-50 rounded-lg transition-colors"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProperty(p.id, p.name)}
-                              className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+              {/* 4 KPI Metric Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">Total Hostels</span>
+                    <h3 className="text-2xl font-bold text-[#0F172A] mt-1">{propertyStats.totalProps} Properties</h3>
+                    <p className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {propertyStats.activeProps} Active
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-[#6366F1] flex items-center justify-center shrink-0">
+                    <Building2 className="w-6 h-6" />
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">Bed Inventory</span>
+                    <h3 className="text-2xl font-bold text-[#0F172A] mt-1">{propertyStats.totalBeds} Beds</h3>
+                    <p className="text-xs text-[#64748B] mt-1">Across all floors</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <BedIcon className="w-6 h-6" />
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">Live Occupancy</span>
+                    <h3 className="text-2xl font-bold text-[#0F172A] mt-1">
+                      {propertyStats.totalOccupied} <span className="text-sm font-semibold text-[#6366F1]">({propertyStats.occupancyRate}%)</span>
+                    </h3>
+                    <div className="w-28 h-1.5 rounded-full bg-[#E2E8F0] overflow-hidden mt-2">
+                      <div 
+                        className="h-full rounded-full bg-[#6366F1]"
+                        style={{ width: `${Math.min(100, Math.max(3, propertyStats.occupancyRate))}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                    <Users className="w-6 h-6" />
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">Vacant Beds</span>
+                    <h3 className="text-2xl font-bold text-[#0F172A] mt-1">
+                      {propertyStats.totalVacant} <span className="text-sm font-bold text-emerald-600">Available</span>
+                    </h3>
+                    <p className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Ready for check-in
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters & Search Toolbar */}
+              <div className="bg-white p-4 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div className="relative flex-1 min-w-[260px] max-w-md">
+                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search properties by name, city or location..."
+                    className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   )}
-                </tbody>
-                </table>
+                </div>
+
+                <div className="flex items-center flex-wrap gap-2.5">
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+
+                  <select 
+                    value={propertyGenderFilter}
+                    onChange={(e) => setPropertyGenderFilter(e.target.value)}
+                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                  >
+                    <option value="all">All Genders</option>
+                    <option value="boys">Boys Only</option>
+                    <option value="girls">Girls Only</option>
+                    <option value="co-living">Co-Living / Unisex</option>
+                  </select>
+
+                  {(searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all') && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setStatusFilter('all');
+                        setPropertyGenderFilter('all');
+                      }}
+                      className="px-3 py-1.5 text-xs font-bold text-[#6366F1] hover:bg-indigo-50 rounded-xl transition-all cursor-pointer"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+
+                  <span className="text-xs font-medium text-[#94A3B8] hidden sm:inline ml-1">
+                    Showing <span className="font-bold text-[#0F172A]">{filteredProperties.length}</span> of {properties.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* Formatted Properties Table */}
+              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] font-bold uppercase text-[11px] tracking-wider">
+                      <tr>
+                        <th className="py-3.5 px-6 w-12 text-center">#</th>
+                        <th className="py-3.5 px-6">Hostel & Location</th>
+                        <th className="py-3.5 px-6">City</th>
+                        <th className="py-3.5 px-6">Type & Gender</th>
+                        <th className="py-3.5 px-6">Live Bed Capacity</th>
+                        <th className="py-3.5 px-6">Status</th>
+                        <th className="py-3.5 px-6 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#F1F5F9]">
+                      {filteredProperties.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-16 px-6 text-center">
+                            <div className="flex flex-col items-center justify-center gap-3 max-w-sm mx-auto">
+                              <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-[#6366F1]">
+                                <Building2 className="w-6 h-6" />
+                              </div>
+                              <div className="text-base font-bold text-[#0F172A]">No properties found</div>
+                              <p className="text-xs text-[#64748B] leading-relaxed">
+                                {searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all'
+                                  ? 'No properties match your filter. Try clearing filters.'
+                                  : 'Click "Add Property" above to create and manage your first PG hostel building.'}
+                              </p>
+                              {!searchQuery && statusFilter === 'all' && (
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(null);
+                                    setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
+                                    setModalType('property');
+                                  }}
+                                  className="mt-1 flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100 cursor-pointer"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                  <span>Add First Property</span>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredProperties.map((p, index) => {
+                          const occPercent = p.totalBeds > 0 ? Math.round(((p.occupied || 0) / p.totalBeds) * 100) : 0;
+                          return (
+                            <tr key={p.id} className="hover:bg-[#F8FAFC] transition-colors group">
+                              <td className="py-4 px-6 text-[#94A3B8] font-bold text-center">{index + 1}</td>
+                              <td className="py-4 px-6">
+                                <div className="flex items-center gap-3.5">
+                                  <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-[#E2E8F0] flex items-center justify-center text-[#6366F1] font-black text-sm shrink-0">
+                                    {p.name.slice(0, 2).toUpperCase()}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-sm text-[#0F172A] block group-hover:text-[#6366F1] transition-colors">
+                                      {p.name}
+                                    </span>
+                                    <span className="text-[11px] text-[#64748B] block truncate max-w-[240px]" title={p.address || p.location}>
+                                      {p.address || p.location || 'Address not configured'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 px-6">
+                                <div className="inline-flex items-center gap-1.5 text-xs font-medium text-[#475569]">
+                                  <MapPin className="w-3.5 h-3.5 text-[#6366F1] shrink-0" />
+                                  <span>{p.city || p.location || 'Tamil Nadu'}</span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-6">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F1F5F9] text-[#475569]">
+                                    {p.type || 'PG'}
+                                  </span>
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    p.gender === 'Boys' 
+                                      ? 'bg-blue-50 text-blue-700' 
+                                      : p.gender === 'Girls'
+                                      ? 'bg-rose-50 text-rose-700'
+                                      : 'bg-purple-50 text-purple-700'
+                                  }`}>
+                                    {p.gender || 'Boys'}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-6">
+                                <div className="w-40">
+                                  <div className="flex items-center justify-between text-[11px] mb-1 font-semibold">
+                                    <span className="text-[#6366F1] font-bold">{p.occupied || 0} Occupied</span>
+                                    <span className="text-[#94A3B8]">{p.vacant || p.totalBeds} Vacant</span>
+                                  </div>
+                                  <div className="w-full h-1.5 rounded-full bg-[#E2E8F0] overflow-hidden">
+                                    <div 
+                                      className="h-full rounded-full bg-[#6366F1] transition-all"
+                                      style={{ width: `${Math.min(100, Math.max(3, occPercent))}%` }}
+                                    />
+                                  </div>
+                                  <div className="text-[10px] text-[#94A3B8] mt-1">
+                                    {p.totalBeds} Total Beds ({occPercent}%)
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 px-6">
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold text-[10px] ${
+                                  p.status === 'Active' 
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                    : 'bg-slate-100 text-slate-600'
+                                }`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                                  <span>{p.status || 'Active'}</span>
+                                </span>
+                              </td>
+                              <td className="py-4 px-6 text-right">
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedProperty(p.id);
+                                      setActiveTab('rooms');
+                                    }}
+                                    title="Manage rooms and beds"
+                                    className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-[#6366F1] rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                  >
+                                    <BedIcon className="w-3.5 h-3.5" />
+                                    <span>Rooms</span>
+                                  </button>
+
+                                  <button
+                                    onClick={() => {
+                                      setEditingItem(p);
+                                      setFormData(p);
+                                      setModalType('property');
+                                    }}
+                                    title="Edit Property"
+                                    className="p-1.5 text-[#94A3B8] hover:text-[#6366F1] hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    <Edit3 className="w-4 h-4" />
+                                  </button>
+
+                                  <button
+                                    onClick={() => handleDeleteProperty(p.id, p.name)}
+                                    title="Delete Property"
+                                    className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

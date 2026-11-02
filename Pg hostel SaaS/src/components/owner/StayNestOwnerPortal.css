@@ -11,8 +11,20 @@
   box-sizing: border-box;
 }
 
+.sn-portal-container,
 .sn-portal-container * {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   box-sizing: border-box;
+}
+
+.sn-portal-container h1,
+.sn-portal-container h2,
+.sn-portal-container h3,
+.sn-portal-container h4,
+.sn-portal-container h5,
+.sn-portal-container h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  letter-spacing: -0.02em;
 }
 
 /* ========================================================= */
