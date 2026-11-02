@@ -1866,85 +1866,83 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 4. PROPERTY MANAGEMENT MODULE (Standard Format)           */}
           {/* ========================================================= */}
           {activeTab === 'properties' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
-              {/* Header Card */}
-              <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-bold text-[#0F172A] tracking-tight">
-                      Property Management
-                    </h2>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-[#6366F1] border border-indigo-100">
+            <div className="pm-layout-container">
+              {/* Header */}
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Property Management</h2>
+                    <span className="pm-header-badge">
                       {properties.length} {properties.length === 1 ? 'Property' : 'Properties'}
                     </span>
                   </div>
-                  <p className="text-sm text-[#64748B] mt-1">
+                  <p className="pm-header-subtitle">
                     Manage your PG properties, live bed occupancy, and operational details
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => {
-                      setEditingItem(null);
-                      setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
-                      setModalType('property');
-                    }}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Property</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setEditingItem(null);
+                    setFormData({ type: 'PG', gender: 'Boys', totalBeds: 40, totalFloors: 3 });
+                    setModalType('property');
+                  }}
+                  className="pm-btn-add"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Property</span>
+                </button>
               </div>
 
-              {/* 4 KPI Metric Summary Cards - Matching Reference */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Total Hostels (Soft Lavender) */}
-                <div className="bg-[#FAF5FF] border border-[#EDE9FE] rounded-2xl p-5 relative overflow-hidden shadow-2xs flex items-center justify-between">
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-[#EDE9FE] text-[#7C3AED] flex items-center justify-center shrink-0">
+              {/* 3. Four Equal-Sized Summary Cards */}
+              <div className="pm-cards-grid">
+                {/* Total Hostels */}
+                <div className="pm-stat-card pm-card-hostels">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-purple">
                       <Building2 className="w-6 h-6" />
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold text-[#475569]">Total Hostels</span>
-                      <h3 className="text-2xl font-black text-[#0F172A] mt-0.5">{propertyStats.totalProps} Properties</h3>
-                      <p className="text-xs font-bold text-emerald-600 mt-1 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {propertyStats.activeProps} Active
-                      </p>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Total Hostels</span>
+                      <div className="pm-card-value">{propertyStats.totalProps} Properties</div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span>{propertyStats.activeProps} Active</span>
+                      </div>
                     </div>
                   </div>
-                  <Building2 className="absolute -bottom-2 -right-2 w-20 h-20 text-[#7C3AED]/10 pointer-events-none" />
+                  <Building2 className="pm-card-watermark text-purple-600" />
                 </div>
 
-                {/* Bed Inventory (Soft Sky Blue) */}
-                <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-2xl p-5 relative overflow-hidden shadow-2xs flex items-center justify-between">
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center shrink-0">
+                {/* Bed Inventory */}
+                <div className="pm-stat-card pm-card-inventory">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-blue">
                       <BedIcon className="w-6 h-6" />
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold text-[#475569]">Bed Inventory</span>
-                      <h3 className="text-2xl font-black text-[#0F172A] mt-0.5">{propertyStats.totalBeds} Beds</h3>
-                      <p className="text-xs font-medium text-[#64748B] mt-1">Across all floors</p>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Bed Inventory</span>
+                      <div className="pm-card-value">{propertyStats.totalBeds} Beds</div>
+                      <div className="pm-card-sub pm-card-sub-gray">Across all floors</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Live Occupancy (Soft Peach / Amber) */}
-                <div className="bg-[#FFF7ED] border border-[#FFEDD5] rounded-2xl p-5 relative overflow-hidden shadow-2xs flex items-center justify-between">
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-[#FFEDD5] text-[#EA580C] flex items-center justify-center shrink-0">
+                {/* Live Occupancy */}
+                <div className="pm-stat-card pm-card-occupancy">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-orange">
                       <Users className="w-6 h-6" />
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold text-[#475569]">Live Occupancy</span>
-                      <h3 className="text-2xl font-black text-[#0F172A] mt-0.5">
-                        {propertyStats.totalOccupied} <span className="text-[#6D28D9] font-bold text-lg">({propertyStats.occupancyRate}%)</span>
-                      </h3>
-                      <div className="w-28 h-2 rounded-full bg-[#E0E7FF] overflow-hidden mt-2">
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Live Occupancy</span>
+                      <div className="pm-card-value">
+                        {propertyStats.totalOccupied}{' '}
+                        <span className="text-[#6D28D9] font-bold text-base">({propertyStats.occupancyRate}%)</span>
+                      </div>
+                      <div className="pm-occupancy-track">
                         <div 
-                          className="h-full rounded-full bg-[#6D28D9]"
+                          className="pm-occupancy-fill"
                           style={{ width: `${Math.min(100, Math.max(3, propertyStats.occupancyRate))}%` }}
                         />
                       </div>
@@ -1952,73 +1950,76 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                   </div>
                 </div>
 
-                {/* Vacant Beds (Soft Mint Green) */}
-                <div className="bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-5 relative overflow-hidden shadow-2xs flex items-center justify-between">
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-[#DCFCE7] text-[#16A34A] flex items-center justify-center shrink-0">
+                {/* Vacant Beds */}
+                <div className="pm-stat-card pm-card-vacant">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-green">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
-                    <div>
-                      <span className="text-xs font-semibold text-[#475569]">Vacant Beds</span>
-                      <h3 className="text-2xl font-black text-[#0F172A] mt-0.5">
-                        {propertyStats.totalVacant} <span className="text-emerald-600 font-bold">Available</span>
-                      </h3>
-                      <p className="text-xs font-bold text-emerald-600 mt-1 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> Ready for check-in
-                      </p>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Vacant Beds</span>
+                      <div className="pm-card-value">
+                        {propertyStats.totalVacant}{' '}
+                        <span className="text-emerald-600 font-bold text-base">Available</span>
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-600 inline-block" />
+                        <span>Ready for check-in</span>
+                      </div>
                     </div>
                   </div>
-                  <BedIcon className="absolute -bottom-2 -right-2 w-20 h-20 text-[#16A34A]/10 pointer-events-none" />
+                  <BedIcon className="pm-card-watermark text-emerald-600" />
                 </div>
               </div>
 
-              {/* Floating Filters & Search Toolbar - Matching Reference */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mt-1 mb-1">
-                <div className="relative flex-1 min-w-[280px] max-w-md">
-                  <Search className="w-4 h-4 text-[#7C3AED] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              {/* 4. Search and Filter Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search properties by name, city or location..."
-                    className="w-full pl-11 pr-9 py-2.5 bg-white border border-purple-200 rounded-2xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all"
+                    className="pm-search-input"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                      className="pm-search-clear"
+                      title="Clear search"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="relative">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="appearance-none pl-4 pr-9 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-[#1E293B] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#7C3AED] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Status</option>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
-                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="pm-select-chevron" />
                   </div>
 
-                  <div className="relative">
+                  <div className="pm-select-box">
                     <select 
                       value={propertyGenderFilter}
                       onChange={(e) => setPropertyGenderFilter(e.target.value)}
-                      className="appearance-none pl-4 pr-9 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-[#1E293B] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#7C3AED] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Genders</option>
                       <option value="boys">Boys Only</option>
                       <option value="girls">Girls Only</option>
                       <option value="co-living">Co-Living / Unisex</option>
                     </select>
-                    <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="pm-select-chevron" />
                   </div>
 
                   {(searchQuery || statusFilter !== 'all' || propertyGenderFilter !== 'all') && (
@@ -2028,7 +2029,7 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                         setStatusFilter('all');
                         setPropertyGenderFilter('all');
                       }}
-                      className="px-3 py-1.5 text-xs font-bold text-[#7C3AED] hover:bg-purple-50 rounded-xl transition-all cursor-pointer"
+                      className="pm-btn-clear-filters"
                     >
                       Clear Filters
                     </button>
@@ -2036,102 +2037,101 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 </div>
               </div>
 
-              {/* Formatted Properties Table with Mild Purple Header - Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-purple-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F3E8FF] border-b border-purple-100/90 text-[#4C1D95] text-xs font-bold">
+              {/* 5. Properly Structured Property Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={filteredProperties.length > 0 && filteredProperties.every(p => selectedRowIds[p.id])}
                             onChange={() => toggleSelectAll(filteredProperties.map(p => p.id))}
-                            className="w-4 h-4 rounded border-purple-300 text-[#7C3AED] focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold">Property Name</th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold">Mobile</th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold">Location / Type</th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold">Status</th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold">Bed Capacity</th>
-                        <th className="py-3.5 px-6 text-[#4C1D95] font-bold text-right">Actions</th>
+                        <th className="pm-table-th pm-th-name">Property Name</th>
+                        <th className="pm-table-th pm-th-mobile">Mobile</th>
+                        <th className="pm-table-th pm-th-loc">Location / Type</th>
+                        <th className="pm-table-th pm-th-status">Status</th>
+                        <th className="pm-table-th pm-th-beds">Bed Capacity</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody>
                       {filteredProperties.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No properties found matching your filter.
                           </td>
                         </tr>
                       ) : (
-                        filteredProperties.map((p, index) => (
-                          <tr key={p.id} className="hover:bg-purple-50/20 transition-colors">
-                            <td className="py-4 px-6">
+                        filteredProperties.map((p) => (
+                          <tr key={p.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[p.id]}
                                 onChange={() => toggleSelectRow(p.id)}
-                                className="w-4 h-4 rounded border-purple-300 text-[#7C3AED] focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4 px-6">
-                              <span className="font-extrabold text-[#0F172A] text-sm block">{p.name}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block truncate max-w-[220px]" title={p.address || p.location}>
-                                {p.address || p.location || 'erode, Tamil Nadu'}
-                              </span>
-                            </td>
-                            <td className="py-4 px-6">
-                              <div className="flex items-center gap-2 text-sm font-bold text-[#1E293B]">
-                                <Phone className="w-4 h-4 text-[#7C3AED]" />
-                                <span>{p.contact || p.phone || '9216781786'}</span>
+                            <td className="pm-table-td pm-td-name">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title" title={p.name}>{p.name}</span>
+                                <span className="pm-prop-sub" title={p.address || p.location}>
+                                  {p.address || p.location || 'erode, Tamil Nadu'}
+                                </span>
                               </div>
                             </td>
-                            <td className="py-4 px-6">
-                              <div className="flex items-center gap-2 text-xs font-semibold text-[#334155]">
-                                <MapPin className="w-4 h-4 text-[#7C3AED]" />
-                                <span>{p.city || p.location || 'erode'} • {p.gender || 'Boys'} PG</span>
+                            <td className="pm-table-td pm-td-mobile">
+                              <div className="pm-cell-flex">
+                                <Phone className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{p.contact || p.phone || '9216781786'}</span>
                               </div>
                             </td>
-                            <td className="py-4 px-6">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5 ${
-                                p.status === 'Active' 
-                                  ? 'bg-[#DCFCE7] text-[#16A34A] border border-[#BBF7D0]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]'
-                              }`}>
-                                <span className={`w-2 h-2 rounded-full ${p.status === 'Active' ? 'bg-[#16A34A]' : 'bg-[#D97706]'}`}></span>
-                                {p.status || 'Active'}
+                            <td className="pm-table-td pm-td-loc">
+                              <div className="pm-cell-flex">
+                                <MapPin className="pm-cell-icon" />
+                                <span className="pm-cell-text-loc">{p.city || p.location || 'erode'} • {p.gender || 'Boys'} PG</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td pm-td-status">
+                              <span className={`pm-status-pill ${p.status === 'Active' ? 'pm-status-active' : 'pm-status-inactive'}`}>
+                                <span className={`pm-status-dot ${p.status === 'Active' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{p.status || 'Active'}</span>
                               </span>
                             </td>
-                            <td className="py-4 px-6">
+                            <td className="pm-table-td pm-td-beds">
                               <button
                                 onClick={() => {
                                   setSelectedProperty(p.id);
                                   setActiveTab('rooms');
                                 }}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+                                className="pm-bed-pill-btn"
+                                title="View Room & Bed details"
                               >
                                 <BedIcon className="w-3.5 h-3.5 text-[#059669]" />
                                 <span>{p.occupied || 1} / {p.totalBeds || 30} BEDS</span>
                               </button>
                             </td>
-                            <td className="py-4 px-6 text-right">
-                              <div className="flex items-center justify-end gap-3.5">
+                            <td className="pm-table-td pm-td-actions">
+                              <div className="pm-actions-box">
                                 <button
                                   onClick={() => {
                                     setEditingItem(p);
                                     setFormData(p);
                                     setModalType('property');
                                   }}
-                                  className="text-[#7C3AED] hover:text-[#6D28D9] transition-colors cursor-pointer"
+                                  className="pm-action-btn-edit"
                                   title="Edit Property"
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProperty(p.id, p.name)}
-                                  className="text-[#EF4444] hover:text-[#DC2626] transition-colors cursor-pointer"
+                                  className="pm-action-btn-delete"
                                   title="Delete Property"
                                 >
                                   <Trash2 className="w-4 h-4" />
