@@ -2172,4 +2172,93 @@
   }
 }
 
+/* ========================================================= */
+/* PREMIUM SUB-TAB NAVIGATION (Staff, Rooms, Finance, etc.)   */
+/* ========================================================= */
+
+.sn-tabs-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  width: fit-content;
+  box-sizing: border-box;
+}
+
+.sn-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #64748B;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.sn-tab-pill:hover {
+  color: #0F172A;
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.sn-tab-pill.active {
+  background: #6C3BFF;
+  border-color: #6C3BFF;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(108, 59, 255, 0.28);
+}
+
+.sn-tab-pill.active:hover {
+  background: #5B2FD8;
+  border-color: #5B2FD8;
+  color: #FFFFFF;
+}
+
+.sn-tab-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sn-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: #E2E8F0;
+  color: #475569;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.sn-tab-pill.active .sn-tab-badge {
+  background: rgba(255, 255, 255, 0.24);
+  color: #FFFFFF;
+}
+
+.sn-tab-pill:hover:not(.active) .sn-tab-badge {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+
 

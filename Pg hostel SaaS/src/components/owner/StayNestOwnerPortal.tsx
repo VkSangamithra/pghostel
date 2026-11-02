@@ -1566,26 +1566,28 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               </div>
 
               {/* Tabs: Wardens & Accountants */}
-              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
+              <div className="sn-tabs-container mb-1">
                 <button
+                  type="button"
                   onClick={() => setStaffTab('wardens')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    staffTab === 'wardens' 
-                      ? 'bg-[#7C3AED] text-white shadow-xs' 
-                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                  }`}
+                  className={`sn-tab-pill ${staffTab === 'wardens' ? 'active' : ''}`}
                 >
-                  Wardens ({staffList.filter(s => s.role === 'warden').length || 5})
+                  <ShieldCheck className="sn-tab-icon" />
+                  <span>Wardens</span>
+                  <span className="sn-tab-badge">
+                    {staffList.filter(s => s.role === 'warden').length}
+                  </span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setStaffTab('accountants')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    staffTab === 'accountants' 
-                      ? 'bg-[#7C3AED] text-white shadow-xs' 
-                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                  }`}
+                  className={`sn-tab-pill ${staffTab === 'accountants' ? 'active' : ''}`}
                 >
-                  Accountants ({staffList.filter(s => s.role === 'accountant').length || 3})
+                  <Users className="sn-tab-icon" />
+                  <span>Accountants</span>
+                  <span className="sn-tab-badge">
+                    {staffList.filter(s => s.role === 'accountant').length}
+                  </span>
                 </button>
               </div>
 
@@ -2326,36 +2328,32 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               </div>
 
               {/* Tabs: Floors, Rooms, Beds */}
-              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
+              <div className="sn-tabs-container mb-1">
                 <button
+                  type="button"
                   onClick={() => setRoomsTab('floors')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    roomsTab === 'floors' 
-                      ? 'bg-[#7C3AED] text-white shadow-xs' 
-                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                  }`}
+                  className={`sn-tab-pill ${roomsTab === 'floors' ? 'active' : ''}`}
                 >
-                  Floors
+                  <Building2 className="sn-tab-icon" />
+                  <span>Floors</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setRoomsTab('rooms')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    roomsTab === 'rooms' 
-                      ? 'bg-[#7C3AED] text-white shadow-xs' 
-                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                  }`}
+                  className={`sn-tab-pill ${roomsTab === 'rooms' ? 'active' : ''}`}
                 >
-                  Rooms
+                  <LayoutDashboard className="sn-tab-icon" />
+                  <span>Rooms</span>
+                  {rooms.length > 0 && <span className="sn-tab-badge">{rooms.length}</span>}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setRoomsTab('beds')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    roomsTab === 'beds' 
-                      ? 'bg-[#7C3AED] text-white shadow-xs' 
-                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                  }`}
+                  className={`sn-tab-pill ${roomsTab === 'beds' ? 'active' : ''}`}
                 >
-                  Beds
+                  <BedIcon className="sn-tab-icon" />
+                  <span>Beds</span>
+                  {summary.totalBeds > 0 && <span className="sn-tab-badge">{summary.totalBeds}</span>}
                 </button>
               </div>
 
@@ -2816,20 +2814,26 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               </div>
 
               {/* Sub-tabs: Collections, Expenses, Deposits, Outstanding */}
-              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
-                {['collections', 'expenses', 'deposits', 'outstanding'].map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setFinanceTab(t as any)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
-                      financeTab === t 
-                        ? 'bg-[#7C3AED] text-white shadow-xs' 
-                        : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+              <div className="sn-tabs-container mb-2">
+                {[
+                  { id: 'collections', label: 'Collections', icon: IndianRupee },
+                  { id: 'expenses', label: 'Expenses', icon: TrendingUp },
+                  { id: 'deposits', label: 'Deposits', icon: Receipt },
+                  { id: 'outstanding', label: 'Outstanding', icon: Clock }
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setFinanceTab(item.id as any)}
+                      className={`sn-tab-pill ${financeTab === item.id ? 'active' : ''}`}
+                    >
+                      <Icon className="sn-tab-icon" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* 4 Financial KPI Cards */}
