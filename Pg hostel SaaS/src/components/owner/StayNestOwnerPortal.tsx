@@ -1097,97 +1097,113 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 1. DASHBOARD MODULE */}
           {/* ========================================================= */}
           {activeTab === 'dashboard' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header with Title and Property Filter */}
-              <div className="sn-page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="sn-title-main text-2xl font-bold text-[#0F172A]">Dashboard</h2>
-                  <p className="sn-subtitle text-sm text-[#64748B]">Overview of all your PG properties</p>
-                </div>
-                <div className="sn-filter-group flex items-center gap-3">
-                  <div className="sn-date-pill flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]">
-                    <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
-                    <span>Oct 2026</span>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Dashboard</h2>
+                    <span className="pm-header-badge">Live System</span>
                   </div>
-                  <select 
-                    value={selectedProperty}
-                    onChange={(e) => setSelectedProperty(e.target.value)}
-                    className="sn-select px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1]"
-                  >
-                    <option value="all">All Properties</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
+                  <p className="pm-header-subtitle">Overview of all your PG properties</p>
+                </div>
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
+                    <div className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-semibold text-[#475569] shadow-2xs">
+                      <Calendar className="w-3.5 h-3.5 text-[#7C3AED]" />
+                      <span>Oct 2026</span>
+                    </div>
+                  </div>
+                  <div className="pm-select-box">
+                    <select 
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="pm-select"
+                    >
+                      <option value="all">All Properties</option>
+                      {properties.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
                 </div>
               </div>
 
-              {/* 4 Summary Stat Cards */}
-              <div className="sn-stat-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {/* 4 Summary Stat Cards - Matching Unified Structure */}
+              <div className="pm-cards-grid">
                 {/* Total Tenants */}
-                <div className="sn-stat-card bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="sn-stat-label text-xs font-semibold text-[#64748B]">Total Tenants</p>
-                    <div className="sn-stat-val-row flex items-baseline gap-3 mt-1.5">
-                      <span className="sn-stat-number text-2xl font-bold text-[#0F172A]">{summary.totalTenants ?? tenants.length}</span>
-                      <span className="sn-stat-tag-green text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        Active
-                      </span>
+                <div className="pm-stat-card pm-card-hostels">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-purple">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Total Tenants</span>
+                      <div className="pm-card-value">{summary.totalTenants ?? tenants.length}</div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span>Active Residents</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="sn-stat-icon-box w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                    <Users className="w-6 h-6" />
-                  </div>
+                  <Users className="pm-card-watermark text-purple-600" />
                 </div>
 
                 {/* Occupied Beds */}
-                <div className="sn-stat-card bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="sn-stat-label text-xs font-semibold text-[#64748B]">Occupied Beds</p>
-                    <div className="sn-stat-val-row flex items-baseline gap-2 mt-1.5">
-                      <span className="sn-stat-number text-2xl font-bold text-[#0F172A]">
-                        {summary.occupiedBeds ?? 0} <span className="text-sm text-[#94A3B8] font-normal">/ {summary.totalBeds ?? 0}</span>
-                      </span>
+                <div className="pm-stat-card pm-card-inventory">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-blue">
+                      <BedIcon className="w-6 h-6" />
                     </div>
-                    <p className="text-xs text-[#64748B] mt-0.5">
-                      {summary.totalBeds > 0 ? Math.round(((summary.occupiedBeds ?? 0) / summary.totalBeds) * 100) : (summary.occupancyPercentage ?? 0)}% Occupancy
-                    </p>
-                  </div>
-                  <div className="sn-stat-icon-box w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                    <BedIcon className="w-6 h-6" />
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Occupied Beds</span>
+                      <div className="pm-card-value">
+                        {summary.occupiedBeds ?? 0} <span className="text-sm text-[#64748B] font-semibold">/ {summary.totalBeds ?? 0}</span>
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-gray">
+                        {summary.totalBeds > 0 ? Math.round(((summary.occupiedBeds ?? 0) / summary.totalBeds) * 100) : (summary.occupancyPercentage ?? 0)}% Live Occupancy
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Monthly Revenue */}
-                <div className="sn-stat-card bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="sn-stat-label text-xs font-semibold text-[#64748B]">Monthly Revenue</p>
-                    <div className="sn-stat-val-row flex items-baseline gap-2 mt-1.5">
-                      <span className="sn-stat-number text-2xl font-bold text-[#0F172A]">
-                        ₹ {(summary.monthlyRevenue ?? financeSummary.totalCollections ?? 0).toLocaleString('en-IN')}
-                      </span>
-                      <span className="sn-stat-tag-green text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                        Received
-                      </span>
+                <div className="pm-stat-card pm-card-occupancy">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-orange">
+                      <IndianRupee className="w-6 h-6" />
                     </div>
-                  </div>
-                  <div className="sn-stat-icon-box w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <IndianRupee className="w-6 h-6" />
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Monthly Revenue</span>
+                      <div className="pm-card-value">
+                        ₹ {(summary.monthlyRevenue ?? financeSummary.totalCollections ?? 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span>Collected this month</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Pending Issues */}
-                <div className="sn-stat-card bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="sn-stat-label text-xs font-semibold text-[#64748B]">Pending Issues</p>
-                    <div className="sn-stat-val-row flex items-baseline gap-2 mt-1.5">
-                      <span className="sn-stat-number text-2xl font-bold text-[#EF4444]">{summary.pendingComplaints ?? 0}</span>
+                <div className="pm-stat-card pm-card-vacant">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-green">
+                      <AlertTriangle className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <p className="text-xs text-[#64748B] mt-0.5">Complaints / Dues</p>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Pending Issues</span>
+                      <div className="pm-card-value">
+                        {summary.pendingComplaints ?? 0} <span className="text-xs text-[#64748B] font-semibold">Tickets</span>
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-gray">
+                        Complaints & Dues
+                      </div>
+                    </div>
                   </div>
-                  <div className="sn-stat-icon-box w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6" />
-                  </div>
+                  <AlertTriangle className="pm-card-watermark text-emerald-600" />
                 </div>
               </div>
 
@@ -1467,147 +1483,172 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 2. STAFF MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'staff' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Staff Management</h2>
-                  <p className="text-sm text-[#64748B]">Manage wardens and accountants for your PG properties</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Staff Management</h2>
+                    <span className="pm-header-badge">
+                      {staffList.length} Staff
+                    </span>
+                  </div>
+                  <p className="pm-header-subtitle">Manage wardens and accountants for your PG properties</p>
                 </div>
+                <button
+                  onClick={() => {
+                    setEditingItem(null);
+                    setFormData({});
+                    setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
+                  }}
+                  className="pm-btn-add"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>{staffTab === 'wardens' ? 'Add Warden' : 'Add Accountant'}</span>
+                </button>
               </div>
 
-              {/* Tabs: Wardens (5) & Accountants (3) */}
-              <div className="flex items-center gap-3 border-b border-[#E2E8F0]">
+              {/* Tabs: Wardens & Accountants */}
+              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
                 <button
                   onClick={() => setStaffTab('wardens')}
-                  className={`pb-3 px-2 text-sm font-bold border-b-2 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     staffTab === 'wardens' 
-                      ? 'border-[#6366F1] text-[#6366F1]' 
-                      : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#7C3AED] text-white shadow-xs' 
+                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                   }`}
                 >
                   Wardens ({staffList.filter(s => s.role === 'warden').length || 5})
                 </button>
                 <button
                   onClick={() => setStaffTab('accountants')}
-                  className={`pb-3 px-2 text-sm font-bold border-b-2 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     staffTab === 'accountants' 
-                      ? 'border-[#6366F1] text-[#6366F1]' 
-                      : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#7C3AED] text-white shadow-xs' 
+                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                   }`}
                 >
                   Accountants ({staffList.filter(s => s.role === 'accountant').length || 3})
                 </button>
               </div>
 
-              {/* Staff Table - Unified Card Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
-                {/* Integrated Card Toolbar Header */}
-                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
-                  <div className="relative flex-1 min-w-[240px] max-w-md">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={`Search ${staffTab}...`}
-                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={`Search ${staffTab}...`}
+                    className="pm-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="pm-search-clear"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex items-center flex-wrap gap-2.5">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Status</option>
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  {(searchQuery || statusFilter !== 'all') && (
                     <button
                       onClick={() => {
-                        setEditingItem(null);
-                        setFormData({});
-                        setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
+                        setSearchQuery('');
+                        setStatusFilter('all');
                       }}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                      className="pm-btn-clear-filters"
                     >
-                      <Plus className="w-4 h-4" />
-                      <span>{staffTab === 'wardens' ? 'Add Warden' : 'Add Accountant'}</span>
+                      Clear Filters
                     </button>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
+              {/* Staff Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={filteredStaff.length > 0 && filteredStaff.every(s => selectedRowIds[s.id])}
                             onChange={() => toggleSelectAll(filteredStaff.map(s => s.id))}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6">Staff Member</th>
-                        <th className="py-3.5 px-6">Mobile</th>
-                        <th className="py-3.5 px-6">Assigned Property</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Credentials & Role</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="pm-table-th">Staff Member</th>
+                        <th className="pm-table-th">Mobile</th>
+                        <th className="pm-table-th">Assigned Property</th>
+                        <th className="pm-table-th">Status</th>
+                        <th className="pm-table-th">Credentials & Role</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody>
                       {filteredStaff.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No staff members found matching criteria.
                           </td>
                         </tr>
                       ) : (
-                        filteredStaff.map((s, index) => (
-                          <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                        filteredStaff.map((s) => (
+                          <tr key={s.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[s.id]}
                                 onChange={() => toggleSelectRow(s.id)}
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className="font-bold text-[#0F172A] text-sm block">{s.name}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
-                                @{s.username || (s.email ? s.email.split('@')[0] : 'staff')} • {s.joinDate || '2026'}
+                            <td className="pm-table-td">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title">{s.name}</span>
+                                <span className="pm-prop-sub">
+                                  @{s.username || (s.email ? s.email.split('@')[0] : 'staff')} • {s.joinDate || '2026'}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Phone className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{s.contact || '9842155670'}</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Building2 className="pm-cell-icon" />
+                                <span className="pm-cell-text-loc">{s.assignedProperty || 'All Properties'}</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <span className={`pm-status-pill ${s.status === 'Active' ? 'pm-status-active' : 'pm-status-inactive'}`}>
+                                <span className={`pm-status-dot ${s.status === 'Active' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{s.status || 'Active'}</span>
                               </span>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {s.contact || '9842155670'}
-                            </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {s.assignedProperty || 'All Properties'}
-                            </td>
-                            <td className="py-4.5 px-4">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
-                                s.status === 'Active' 
-                                  ? 'bg-[#D1FAE5] text-[#059669]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706]'
-                              }`}>
-                                {s.status || 'Active'}
-                              </span>
-                            </td>
-                            <td className="py-4.5 px-4">
+                            <td className="pm-table-td">
                               <button
                                 onClick={() => {
                                   setViewingCredentials({
@@ -1620,28 +1661,28 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                   });
                                   setCopiedCredentials(false);
                                 }}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                                className="pm-bed-pill-btn"
                               >
                                 <span>{s.role ? s.role.toUpperCase() : (staffTab === 'wardens' ? 'WARDEN' : 'ACCOUNTANT')}</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <td className="pm-table-td pm-td-actions">
+                              <div className="pm-actions-box">
                                 <button
                                   onClick={() => {
                                     setEditingItem(s);
                                     setFormData(s);
                                     setModalType(staffTab === 'wardens' ? 'warden' : 'accountant');
                                   }}
-                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-edit"
                                   title="Edit Staff"
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteStaff(s.id, s.name)}
-                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-delete"
                                   title="Delete Staff"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -1662,134 +1703,163 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 3. TENANT MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'tenants' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Tenant Management</h2>
-                  <p className="text-sm text-[#64748B]">View and manage all tenant records</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Tenant Management</h2>
+                    <span className="pm-header-badge">
+                      {tenants.length} {tenants.length === 1 ? 'Resident' : 'Residents'}
+                    </span>
+                  </div>
+                  <p className="pm-header-subtitle">View and manage all tenant records and active room allocations</p>
                 </div>
+                <button
+                  onClick={() => {
+                    setEditingItem(null);
+                    setFormData({ propertyName: properties[0]?.name || 'Green Valley PG', monthlyRent: 7500 });
+                    setModalType('tenant');
+                  }}
+                  className="pm-btn-add"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Tenant</span>
+                </button>
               </div>
 
-              {/* Tenant Table - Unified Card Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
-                {/* Integrated Card Toolbar Header */}
-                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
-                  <div className="relative flex-1 min-w-[240px] max-w-md">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search tenants..."
-                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search tenants..."
+                    className="pm-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="pm-search-clear"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex items-center flex-wrap gap-2.5">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={selectedProperty}
                       onChange={(e) => setSelectedProperty(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Properties</option>
                       {properties.map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>
                       ))}
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  <div className="pm-select-box">
                     <select 
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Status</option>
                       <option value="Checked In">Checked In</option>
                       <option value="Checked Out">Checked Out</option>
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  {(searchQuery || statusFilter !== 'all' || selectedProperty !== 'all') && (
                     <button
                       onClick={() => {
-                        setEditingItem(null);
-                        setFormData({ propertyName: properties[0]?.name || 'Green Valley PG', monthlyRent: 7500 });
-                        setModalType('tenant');
+                        setSearchQuery('');
+                        setStatusFilter('all');
+                        setSelectedProperty('all');
                       }}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                      className="pm-btn-clear-filters"
                     >
-                      <Plus className="w-4 h-4" />
-                      <span>Add Tenant</span>
+                      Clear Filters
                     </button>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
+              {/* Tenant Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={filteredTenants.length > 0 && filteredTenants.every(t => selectedRowIds[t.id])}
                             onChange={() => toggleSelectAll(filteredTenants.map(t => t.id))}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6">Resident Name</th>
-                        <th className="py-3.5 px-6">Mobile</th>
-                        <th className="py-3.5 px-6">Hostel / Source</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Assigned Room & Access</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="pm-table-th">Resident Name</th>
+                        <th className="pm-table-th">Mobile</th>
+                        <th className="pm-table-th">Hostel / Source</th>
+                        <th className="pm-table-th">Status</th>
+                        <th className="pm-table-th">Assigned Room & Access</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <tbody>
                       {filteredTenants.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No tenants found matching criteria.
                           </td>
                         </tr>
                       ) : (
                         filteredTenants.map((t, index) => (
-                          <tr key={t.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                          <tr key={t.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[t.id]}
                                 onChange={() => toggleSelectRow(t.id)}
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className="font-bold text-[#0F172A] text-sm block">{t.name}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
-                                Joined: {t.checkInDate || '2026'}
-                              </span>
+                            <td className="pm-table-td">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title">{t.name}</span>
+                                <span className="pm-prop-sub">Joined: {t.checkInDate || '2026'}</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {t.contact || t.phone || '9950087570'}
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Phone className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{t.contact || t.phone || '9950087570'}</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {t.property || 'Hostel'}
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Building2 className="pm-cell-icon" />
+                                <span className="pm-cell-text-loc">{t.property || 'Hostel'}</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
-                                t.status === 'Checked In' 
-                                  ? 'bg-[#D1FAE5] text-[#059669]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                            <td className="pm-table-td">
+                              <span className={`pm-status-pill ${
+                                t.status === 'Checked In' ? 'pm-status-active' : 'pm-status-inactive'
                               }`}>
-                                {t.status || 'Checked In'}
+                                <span className={`pm-status-dot ${t.status === 'Checked In' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{t.status || 'Checked In'}</span>
                               </span>
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="pm-table-td">
                               <button
                                 onClick={() => {
                                   const cleanPhone = t.phone || t.contact || '';
@@ -1805,14 +1875,14 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                   });
                                   setCopiedCredentials(false);
                                 }}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                                className="pm-bed-pill-btn"
                               >
                                 <span>{t.roomBed || `ROOM ${101 + index}`}</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <td className="pm-table-td pm-td-actions">
+                              <div className="pm-actions-box">
                                 {t.status === 'Checked In' && (
                                   <button
                                     onClick={() => handleCheckoutTenant(t.id, t.name)}
@@ -1838,14 +1908,14 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                                     });
                                     setModalType('tenant');
                                   }}
-                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-edit"
                                   title="Edit Tenant"
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteTenant(t.id, t.name)}
-                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-delete"
                                   title="Delete Tenant"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -2152,88 +2222,114 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 5. ROOMS & BEDS MODULE */}
           {/* ========================================================= */}
           {activeTab === 'rooms' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Rooms & Beds</h2>
-                  <p className="text-sm text-[#64748B]">Manage floors, rooms and bed allocation</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Rooms & Beds</h2>
+                    <span className="pm-header-badge">
+                      {filteredRooms.length} Rooms
+                    </span>
+                  </div>
+                  <p className="pm-header-subtitle">Manage floors, rooms and bed allocation</p>
                 </div>
-                <div>
-                  <select 
-                    value={selectedProperty}
-                    onChange={(e) => setSelectedProperty(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
+                    <select 
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="pm-select"
+                    >
+                      {properties.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
+                  <button
+                    onClick={() => {
+                      const prop = properties.find(p => p.id === selectedProperty) || properties[0];
+                      setEditingItem(null);
+                      setFormData({ 
+                        propertyId: prop?.id,
+                        roomType: 'Sharing', 
+                        totalBeds: 3, 
+                        rentPerBed: 6500,
+                        floorNumber: 1
+                      });
+                      setModalType('room');
+                    }}
+                    className="pm-btn-add"
                   >
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
+                    <Plus className="w-4 h-4" />
+                    <span>Add Room</span>
+                  </button>
                 </div>
               </div>
 
               {/* Tabs: Floors, Rooms, Beds */}
-              <div className="flex items-center gap-3 border-b border-[#E2E8F0]">
+              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
                 <button
                   onClick={() => setRoomsTab('floors')}
-                  className={`pb-3 px-2 text-sm font-bold border-b-2 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     roomsTab === 'floors' 
-                      ? 'border-[#6366F1] text-[#6366F1]' 
-                      : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#7C3AED] text-white shadow-xs' 
+                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                   }`}
                 >
                   Floors
                 </button>
                 <button
                   onClick={() => setRoomsTab('rooms')}
-                  className={`pb-3 px-2 text-sm font-bold border-b-2 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     roomsTab === 'rooms' 
-                      ? 'border-[#6366F1] text-[#6366F1]' 
-                      : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#7C3AED] text-white shadow-xs' 
+                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                   }`}
                 >
                   Rooms
                 </button>
                 <button
                   onClick={() => setRoomsTab('beds')}
-                  className={`pb-3 px-2 text-sm font-bold border-b-2 transition-all ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     roomsTab === 'beds' 
-                      ? 'border-[#6366F1] text-[#6366F1]' 
-                      : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#7C3AED] text-white shadow-xs' 
+                      : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                   }`}
                 >
                   Beds
                 </button>
               </div>
 
-              {/* Rooms Table - Unified Card Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
-                {/* Integrated Card Toolbar Header */}
-                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
-                  <div className="relative flex-1 min-w-[240px] max-w-md">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search rooms..."
-                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search rooms..."
+                    className="pm-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="pm-search-clear"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex items-center flex-wrap gap-2.5">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={floorFilter}
                       onChange={(e) => setFloorFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">Floor: All Floors</option>
                       <option value="Ground Floor">Ground Floor</option>
@@ -2247,11 +2343,14 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                         );
                       })}
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  <div className="pm-select-box">
                     <select 
                       value={roomTypeFilter}
                       onChange={(e) => setRoomTypeFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">Room Type: All</option>
                       <option value="Triple Sharing">Triple Sharing</option>
@@ -2259,112 +2358,115 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                       <option value="Single Room">Single Room</option>
                       <option value="Sharing">Sharing</option>
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  {(searchQuery || floorFilter !== 'all' || roomTypeFilter !== 'all') && (
                     <button
                       onClick={() => {
-                        const prop = properties.find(p => p.id === selectedProperty) || properties[0];
-                        setEditingItem(null);
-                        setFormData({ 
-                          propertyId: prop?.id,
-                          roomType: 'Sharing', 
-                          totalBeds: 3, 
-                          rentPerBed: 6500,
-                          floorNumber: 1
-                        });
-                        setModalType('room');
+                        setSearchQuery('');
+                        setFloorFilter('all');
+                        setRoomTypeFilter('all');
                       }}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
+                      className="pm-btn-clear-filters"
                     >
-                      <Plus className="w-4 h-4" />
-                      <span>Add Room</span>
+                      Clear Filters
                     </button>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
+              {/* Rooms Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={filteredRooms.length > 0 && filteredRooms.every(r => selectedRowIds[r.id])}
                             onChange={() => toggleSelectAll(filteredRooms.map(r => r.id))}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6">Room Details</th>
-                        <th className="py-3.5 px-6">Floor & Sharing</th>
-                        <th className="py-3.5 px-6">Rent per Bed</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Bed Matrix</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="pm-table-th">Room Details</th>
+                        <th className="pm-table-th">Floor & Sharing</th>
+                        <th className="pm-table-th">Rent per Bed</th>
+                        <th className="pm-table-th">Status</th>
+                        <th className="pm-table-th">Bed Matrix</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <tbody>
                       {filteredRooms.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No rooms configured yet. Click "Add Room" above to set up your rooms.
                           </td>
                         </tr>
                       ) : (
-                        filteredRooms.map((r, index) => (
-                          <tr key={r.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                        filteredRooms.map((r) => (
+                          <tr key={r.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[r.id]}
                                 onChange={() => toggleSelectRow(r.id)}
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className="font-bold text-[#0F172A] text-sm block">Room {r.roomNo}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
-                                {r.occupied || 0} Occupied • {r.vacant || (r.totalBeds - (r.occupied || 0))} Vacant
-                              </span>
+                            <td className="pm-table-td">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title">Room {r.roomNo}</span>
+                                <span className="pm-prop-sub">
+                                  {r.occupied || 0} Occupied • {r.vacant || (r.totalBeds - (r.occupied || 0))} Vacant
+                                </span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {r.floor} • {r.roomType || 'Standard'}
+                            <td className="pm-table-td">
+                              <span className="pm-cell-text-bold">{r.floor} • {r.roomType || 'Standard'}</span>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              ₹ {(r.rentPerBed || 6500).toLocaleString('en-IN')} / mo
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <IndianRupee className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{(r.rentPerBed || 6500).toLocaleString('en-IN')} / mo</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
-                                (r.occupied || 0) < r.totalBeds
-                                  ? 'bg-[#D1FAE5] text-[#059669]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                            <td className="pm-table-td">
+                              <span className={`pm-status-pill ${
+                                (r.occupied || 0) < r.totalBeds ? 'pm-status-active' : 'pm-status-inactive'
                               }`}>
-                                {(r.occupied || 0) < r.totalBeds ? 'Available' : 'Full'}
+                                <span className={`pm-status-dot ${(r.occupied || 0) < r.totalBeds ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{(r.occupied || 0) < r.totalBeds ? 'Available' : 'Full'}</span>
                               </span>
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="pm-table-td">
                               <button
                                 onClick={() => setSelectedRoomForBeds(r)}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                                className="pm-bed-pill-btn"
                               >
+                                <BedIcon className="w-3.5 h-3.5 text-[#059669]" />
                                 <span>{r.occupied || 0}/{r.totalBeds} BEDS</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <td className="pm-table-td pm-td-actions">
+                              <div className="pm-actions-box">
                                 <button
                                   onClick={() => {
                                     setEditingItem(r);
                                     setFormData(r);
                                     setModalType('room');
                                   }}
-                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-edit"
                                   title="Edit Room"
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteRoom(r.id, r.roomNo)}
-                                  className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-delete"
                                   title="Delete Room"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -2623,41 +2725,49 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 6. FINANCE MANAGEMENT MODULE */}
           {/* ========================================================= */}
           {activeTab === 'finance' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Finance Management</h2>
-                  <p className="text-sm text-[#64748B]">Track rent collections, expenses and deposits</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Finance Management</h2>
+                    <span className="pm-header-badge">Realtime Ledger</span>
+                  </div>
+                  <p className="pm-header-subtitle">Track rent collections, expenses and deposits</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <select 
-                    value={selectedProperty}
-                    onChange={(e) => setSelectedProperty(e.target.value)}
-                    className="px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]"
-                  >
-                    <option value="all">All Properties</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                  <div className="flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569]">
-                    <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
-                    <span>Oct 2026</span>
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
+                    <select 
+                      value={selectedProperty}
+                      onChange={(e) => setSelectedProperty(e.target.value)}
+                      className="pm-select"
+                    >
+                      <option value="all">All Properties</option>
+                      {properties.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
+                  <div className="pm-select-box">
+                    <div className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-2xl text-xs font-semibold text-[#475569] shadow-2xs">
+                      <Calendar className="w-3.5 h-3.5 text-[#7C3AED]" />
+                      <span>Oct 2026</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Sub-tabs: Collections, Expenses, Deposits, Outstanding */}
-              <div className="flex items-center gap-3 border-b border-[#E2E8F0]">
+              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
                 {['collections', 'expenses', 'deposits', 'outstanding'].map((t) => (
                   <button
                     key={t}
                     onClick={() => setFinanceTab(t as any)}
-                    className={`pb-3 px-2 text-sm font-bold border-b-2 capitalize transition-all ${
+                    className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
                       financeTab === t 
-                        ? 'border-[#6366F1] text-[#6366F1]' 
-                        : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                        ? 'bg-[#7C3AED] text-white shadow-xs' 
+                        : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                     }`}
                   >
                     {t}
@@ -2666,180 +2776,207 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               </div>
 
               {/* 4 Financial KPI Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-[#64748B]">Total Collections</p>
-                    <p className="text-2xl font-bold text-[#0F172A] mt-1.5">
-                      ₹ {(financeSummary.totalCollections ?? 0).toLocaleString('en-IN')}
-                    </p>
+              <div className="pm-cards-grid">
+                <div className="pm-stat-card pm-card-hostels">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-purple">
+                      <IndianRupee className="w-6 h-6" />
+                    </div>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Total Collections</span>
+                      <div className="pm-card-value">
+                        ₹ {(financeSummary.totalCollections ?? 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span>Collected this month</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <IndianRupee className="w-6 h-6" />
+                  <IndianRupee className="pm-card-watermark text-purple-600" />
+                </div>
+
+                <div className="pm-stat-card pm-card-inventory">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-blue">
+                      <TrendingUp className="w-6 h-6 rotate-180" />
+                    </div>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Total Expenses</span>
+                      <div className="pm-card-value">
+                        ₹ {(financeSummary.totalExpenses ?? 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-gray">Operational overhead</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-[#64748B]">Total Expenses</p>
-                    <p className="text-2xl font-bold text-[#EF4444] mt-1.5">
-                      ₹ {(financeSummary.totalExpenses ?? 0).toLocaleString('en-IN')}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 rotate-180" />
-                  </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-[#64748B]">Total Deposits</p>
-                    <p className="text-2xl font-bold text-[#7C3AED] mt-1.5">
-                      ₹ {(financeSummary.totalDeposits ?? 0).toLocaleString('en-IN')}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6" />
+                <div className="pm-stat-card pm-card-occupancy">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-orange">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Total Deposits</span>
+                      <div className="pm-card-value">
+                        ₹ {(financeSummary.totalDeposits ?? 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-gray">Held securely</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-[#64748B]">Outstanding Rent</p>
-                    <p className="text-2xl font-bold text-amber-600 mt-1.5">
-                      ₹ {(financeSummary.outstandingRent ?? 0).toLocaleString('en-IN')}
-                    </p>
+                <div className="pm-stat-card pm-card-vacant">
+                  <div className="pm-card-main">
+                    <div className="pm-card-icon-box pm-card-icon-green">
+                      <AlertTriangle className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div className="pm-card-content">
+                      <span className="pm-card-label">Outstanding Rent</span>
+                      <div className="pm-card-value">
+                        ₹ {(financeSummary.outstandingRent ?? 0).toLocaleString('en-IN')}
+                      </div>
+                      <div className="pm-card-sub pm-card-sub-green">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-600 inline-block" />
+                        <span>Overdue balance</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6" />
-                  </div>
+                  <AlertTriangle className="pm-card-watermark text-emerald-600" />
                 </div>
               </div>
 
-              {/* Collections Table - Unified Card Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
-                {/* Integrated Card Toolbar Header */}
-                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
-                  <div className="relative flex-1 min-w-[240px] max-w-md">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search payments..."
-                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search payments..."
+                    className="pm-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="pm-search-clear"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex items-center flex-wrap gap-2.5">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Status</option>
                       <option value="Paid">Paid</option>
                       <option value="Pending">Pending</option>
                     </select>
-
-                    <button
-                      onClick={() => {
-                        setEditingItem(null);
-                        setFormData({ amount: 8000, paymentMethod: 'UPI' });
-                        setModalType('payment');
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>Add Payment</span>
-                    </button>
+                    <ChevronDown className="pm-select-chevron" />
                   </div>
-                </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
+                  <button
+                    onClick={() => {
+                      setEditingItem(null);
+                      setFormData({ amount: 8000, paymentMethod: 'UPI' });
+                      setModalType('payment');
+                    }}
+                    className="pm-btn-add"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Payment</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Collections Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={collections.length > 0 && collections.every(c => selectedRowIds[c.id])}
                             onChange={() => toggleSelectAll(collections.map(c => c.id))}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6">Resident / Payer</th>
-                        <th className="py-3.5 px-6">Mobile</th>
-                        <th className="py-3.5 px-6">Property & Room</th>
-                        <th className="py-3.5 px-6">Amount</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Receipt & Invoice</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="pm-table-th">Resident / Payer</th>
+                        <th className="pm-table-th">Mobile</th>
+                        <th className="pm-table-th">Property & Room</th>
+                        <th className="pm-table-th">Amount</th>
+                        <th className="pm-table-th">Status</th>
+                        <th className="pm-table-th">Receipt & Invoice</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <tbody>
                       {collections.length === 0 ? (
                         <tr>
-                          <td colSpan={8} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={8} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No collection records logged yet.
                           </td>
                         </tr>
                       ) : (
-                        collections.map((c, index) => (
-                          <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                        collections.map((c) => (
+                          <tr key={c.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[c.id]}
                                 onChange={() => toggleSelectRow(c.id)}
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className="font-bold text-[#0F172A] text-sm block">{c.tenantName}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
-                                {c.month} • Paid on {c.paymentDate}
+                            <td className="pm-table-td">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title">{c.tenantName}</span>
+                                <span className="pm-prop-sub">{c.month} • Paid on {c.paymentDate}</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Phone className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{c.phone || '9950087570'}</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Building2 className="pm-cell-icon" />
+                                <span className="pm-cell-text-loc">{c.property} • Room {c.room}</span>
+                              </div>
+                            </td>
+                            <td className="pm-table-td">
+                              <span className="pm-cell-text-bold">₹ {c.amount.toLocaleString('en-IN')}</span>
+                            </td>
+                            <td className="pm-table-td">
+                              <span className={`pm-status-pill ${c.status === 'Paid' ? 'pm-status-active' : 'pm-status-inactive'}`}>
+                                <span className={`pm-status-dot ${c.status === 'Paid' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{c.status || 'Paid'}</span>
                               </span>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {c.phone || '9950087570'}
-                            </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {c.property} • Room {c.room}
-                            </td>
-                            <td className="py-4.5 px-4 text-sm font-bold text-[#0F172A]">
-                              ₹ {c.amount.toLocaleString('en-IN')}
-                            </td>
-                            <td className="py-4.5 px-4">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
-                                c.status === 'Paid' 
-                                  ? 'bg-[#D1FAE5] text-[#059669]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706]'
-                              }`}>
-                                {c.status || 'Paid'}
-                              </span>
-                            </td>
-                            <td className="py-4.5 px-4">
+                            <td className="pm-table-td">
                               <button
                                 onClick={() => showToast(`Receipt generated for ${c.tenantName}`)}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                                className="pm-bed-pill-btn"
                               >
                                 <span>RECEIPT</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
+                            <td className="pm-table-td pm-td-actions">
                               <button 
                                 onClick={() => showToast(`Receipt downloaded for ${c.tenantName}`)}
-                                className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                className="pm-action-btn-edit"
                                 title="Download PDF"
                               >
                                 <FileText className="w-4 h-4" />
@@ -2859,140 +2996,172 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 7. COMPLAINTS MONITORING MODULE */}
           {/* ========================================================= */}
           {activeTab === 'complaints' && (
-            <div className="flex flex-col w-full" style={{ gap: '1.5rem' }}>
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Complaints</h2>
-                  <p className="text-sm text-[#64748B]">Track and resolve tenant complaints</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Complaints Monitoring</h2>
+                    <span className="pm-header-badge">
+                      {filteredComplaints.length} {filteredComplaints.length === 1 ? 'Ticket' : 'Tickets'}
+                    </span>
+                  </div>
+                  <p className="pm-header-subtitle">Track and resolve tenant complaints and maintenance tickets</p>
                 </div>
               </div>
 
-              {/* Complaints Table - Unified Card Matching Reference Format */}
-              <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden" style={{ marginTop: '1.5rem' }}>
-                {/* Integrated Card Toolbar Header */}
-                <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-wrap items-center justify-between gap-3 bg-white">
-                  <div className="relative flex-1 min-w-[240px] max-w-md">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search complaints..."
-                      className="w-full pl-10 pr-9 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-medium text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:bg-white transition-all"
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
+              {/* Toolbar */}
+              <div className="pm-toolbar">
+                <div className="pm-search-wrapper">
+                  <Search className="pm-search-icon" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search complaints..."
+                    className="pm-search-input"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="pm-search-clear"
+                      title="Clear search"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex items-center flex-wrap gap-2.5">
+                <div className="pm-filters-wrapper">
+                  <div className="pm-select-box">
                     <select 
                       value={selectedProperty}
                       onChange={(e) => setSelectedProperty(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Properties</option>
                       {properties.map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>
                       ))}
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
+                  </div>
 
+                  <div className="pm-select-box">
                     <select 
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#6366F1] cursor-pointer"
+                      className="pm-select"
                     >
                       <option value="all">All Status</option>
                       <option value="Open">Open</option>
                       <option value="In Progress">In Progress</option>
                       <option value="Resolved">Resolved</option>
                     </select>
+                    <ChevronDown className="pm-select-chevron" />
                   </div>
-                </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs font-semibold">
+                  {(searchQuery || statusFilter !== 'all' || selectedProperty !== 'all') && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setStatusFilter('all');
+                        setSelectedProperty('all');
+                      }}
+                      className="pm-btn-clear-filters"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Complaints Table */}
+              <div className="pm-table-card">
+                <div className="pm-table-scroll-container">
+                  <table className="pm-table">
+                    <thead className="pm-table-thead">
                       <tr>
-                        <th className="w-12 py-3.5 px-6">
+                        <th className="pm-table-th pm-th-check">
                           <input 
                             type="checkbox" 
                             checked={filteredComplaints.length > 0 && filteredComplaints.every(c => selectedRowIds[c.id])}
                             onChange={() => toggleSelectAll(filteredComplaints.map(c => c.id))}
-                            className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                            className="pm-checkbox" 
                           />
                         </th>
-                        <th className="py-3.5 px-6">Complaint Title</th>
-                        <th className="py-3.5 px-6">Mobile / Tenant</th>
-                        <th className="py-3.5 px-6">Property & Room</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Assigned Resolution</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
+                        <th className="pm-table-th">Complaint Title</th>
+                        <th className="pm-table-th">Resident</th>
+                        <th className="pm-table-th">Property & Room</th>
+                        <th className="pm-table-th">Status</th>
+                        <th className="pm-table-th">Assigned Resolution</th>
+                        <th className="pm-table-th pm-th-actions">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F1F5F9]">
+                    <tbody>
                       {filteredComplaints.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="py-12 text-center text-[#94A3B8]">
+                          <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: '#94A3B8' }}>
                             No complaints logged yet. Everything is running smoothly!
                           </td>
                         </tr>
                       ) : (
-                        filteredComplaints.map((c, index) => (
-                          <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-4.5 px-4">
+                        filteredComplaints.map((c) => (
+                          <tr key={c.id} className="pm-table-row">
+                            <td className="pm-table-td pm-td-check">
                               <input 
                                 type="checkbox" 
                                 checked={!!selectedRowIds[c.id]}
                                 onChange={() => toggleSelectRow(c.id)}
-                                className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer" 
+                                className="pm-checkbox" 
                               />
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className="font-bold text-[#0F172A] text-sm block">{c.title}</span>
-                              <span className="text-[11px] font-medium text-[#64748B] mt-0.5 block">
-                                {c.id} • {c.priority} Priority • {c.date}
-                              </span>
+                            <td className="pm-table-td">
+                              <div className="pm-prop-name-box">
+                                <span className="pm-prop-title">{c.title}</span>
+                                <span className="pm-prop-sub">
+                                  {c.id} • {c.priority} Priority • {c.date}
+                                </span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {c.tenant || 'Anika Subramaniam'}
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Users className="pm-cell-icon" />
+                                <span className="pm-cell-text-bold">{c.tenant || 'Resident'}</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4 text-sm font-medium text-[#475569]">
-                              {c.property} • Room {c.room}
+                            <td className="pm-table-td">
+                              <div className="pm-cell-flex">
+                                <Building2 className="pm-cell-icon" />
+                                <span className="pm-cell-text-loc">{c.property} • Room {c.room}</span>
+                              </div>
                             </td>
-                            <td className="py-4.5 px-4">
-                              <span className={`px-3.5 py-1 rounded-full text-xs font-semibold inline-block ${
-                                c.status === 'Resolved' 
-                                  ? 'bg-[#D1FAE5] text-[#059669]' 
-                                  : 'bg-[#FEF3C7] text-[#D97706]'
+                            <td className="pm-table-td">
+                              <span className={`pm-status-pill ${
+                                c.status === 'Resolved' ? 'pm-status-active' : 'pm-status-inactive'
                               }`}>
-                                {c.status || 'Open'}
+                                <span className={`pm-status-dot ${c.status === 'Resolved' ? 'pm-dot-active' : 'pm-dot-inactive'}`}></span>
+                                <span>{c.status || 'Open'}</span>
                               </span>
                             </td>
-                            <td className="py-4.5 px-4">
+                            <td className="pm-table-td">
                               <button
                                 onClick={() => handleResolveComplaint(c.id)}
-                                className="border border-[#A7F3D0] bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] px-3.5 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center justify-between gap-2.5 transition-all cursor-pointer"
+                                className="pm-bed-pill-btn"
                               >
-                                <span>{c.status === 'Resolved' ? 'RESOLVED' : 'DEMO1'}</span>
+                                <span>{c.status === 'Resolved' ? 'RESOLVED' : 'IN PROGRESS'}</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-[#059669]" />
                               </button>
                             </td>
-                            <td className="py-4.5 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
+                            <td className="pm-table-td pm-td-actions">
+                              <div className="pm-actions-box">
                                 <button
                                   onClick={() => {
                                     setEditingItem(c);
                                     setFormData(c);
                                     setModalType('complaint');
                                   }}
-                                  className="p-1.5 text-[#94A3B8] hover:text-[#059669] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                  className="pm-action-btn-edit"
                                   title="Edit Complaint"
                                 >
                                   <Edit3 className="w-4 h-4" />
@@ -3013,17 +3182,20 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
           {/* 8. REPORTS & SETTINGS MODULE */}
           {/* ========================================================= */}
           {(activeTab === 'reports' || activeTab === 'settings') && (
-            <div className="space-y-6">
+            <div className="pm-layout-container">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#0F172A]">Reports & Settings</h2>
-                  <p className="text-sm text-[#64748B]">Generate reports, manage policies and configure settings</p>
+              <div className="pm-header-container">
+                <div className="pm-header-left">
+                  <div className="pm-header-title-row">
+                    <h2 className="pm-header-title">Reports & Settings</h2>
+                    <span className="pm-header-badge">Control Hub</span>
+                  </div>
+                  <p className="pm-header-subtitle">Generate reports, manage policies and configure settings</p>
                 </div>
               </div>
 
               {/* Top Navigation Tabs */}
-              <div className="flex items-center gap-6 border-b border-[#E2E8F0]">
+              <div className="flex items-center gap-3 border-b border-purple-100 pb-2">
                 {[
                   { id: 'reports', label: 'Reports' },
                   { id: 'policies', label: 'PG Policies' },
@@ -3033,10 +3205,10 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                   <button
                     key={t.id}
                     onClick={() => setReportsTab(t.id as any)}
-                    className={`pb-3 px-1 text-sm font-bold border-b-2 transition-all ${
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       reportsTab === t.id 
-                        ? 'border-[#6366F1] text-[#6366F1]' 
-                        : 'border-transparent text-[#64748B] hover:text-[#0F172A]'
+                        ? 'bg-[#7C3AED] text-white shadow-xs' 
+                        : 'bg-white text-[#64748B] hover:text-[#0F172A] border border-slate-200'
                     }`}
                   >
                     {t.label}
