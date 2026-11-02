@@ -3885,218 +3885,232 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
       </div>
 
       {/* ========================================================= */}
-      {/* GLOBAL REUSABLE MODALS */}
       {/* ========================================================= */}
-      {modalType && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className={`bg-white w-full ${modalType === 'property' ? 'max-w-[700px]' : 'max-w-lg'} rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col my-auto max-h-[92vh]`}>
+      {/* EDIT PROPERTY MODAL (Dedicated 1-to-1 Match to Reference 2) */}
+      {/* ========================================================= */}
+      {modalType === 'property' && (
+        <div className="edit-property-modal-overlay" onClick={() => { setModalType(null); setEditingItem(null); }}>
+          <div className="edit-property-modal" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
-            {modalType === 'property' ? (
-              <div className="px-7 sm:px-8 pt-7 pb-5 bg-white border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-                <div>
-                  <h3 className="font-bold text-xl sm:text-2xl text-[#0F172A] tracking-tight">
-                    {editingItem ? 'Edit Property' : 'Add New Property'}
-                  </h3>
-                  <p className="text-sm text-[#64748B] mt-1">
-                    Update your property information and accommodation details.
-                  </p>
-                </div>
-                <button 
-                  type="button"
-                  onClick={() => { setModalType(null); setEditingItem(null); }}
-                  className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                  aria-label="Close modal"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            ) : (
-              <div className="px-6 py-4 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between">
-                <h3 className="font-bold text-sm text-[#0F172A] capitalize">
-                  {editingItem ? `Edit ${modalType}` : `Add New ${modalType}`}
+            <div className="modal-header">
+              <div className="modal-header-left">
+                <h3 className="modal-title">
+                  {editingItem ? 'Edit Property' : 'Add New Property'}
                 </h3>
-                <button 
-                  onClick={() => { setModalType(null); setEditingItem(null); }}
-                  className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A]"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <p className="modal-subtitle">
+                  Update your property information and accommodation details.
+                </p>
               </div>
-            )}
+              <button 
+                type="button"
+                onClick={() => { setModalType(null); setEditingItem(null); }}
+                className="modal-close-btn"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleModalSubmit} className={`p-7 sm:p-8 space-y-5 text-sm overflow-y-auto flex-1`}>
-              {modalType === 'property' && (
-                <>
-                  {/* 1. Property Photo Upload & Preview */}
-                  <div className="bg-[#FAF8FF] border border-[#EDE9FE] rounded-xl p-4 sm:p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="font-semibold text-sm text-[#1E293B] flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-lg bg-purple-100 text-[#6C3BFF] flex items-center justify-center">
-                          <ImageIcon className="w-3.5 h-3.5" />
-                        </span>
-                        <span>Property Photo</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <span className="text-xs text-[#64748B] font-normal">Upload building / room photo</span>
+            {/* Modal Content */}
+            <form id="editPropertyForm" onSubmit={handleModalSubmit} className="modal-content">
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={propertyImageFileRef}
+                accept="image/*"
+                onChange={handlePropertyImageChange}
+                style={{ display: 'none' }}
+              />
+
+              {/* Property Photo Section */}
+              {formData.image ? (
+                <div className="property-photo-section">
+                  <img
+                    src={formData.image}
+                    alt="Property Preview"
+                    className="property-photo-preview"
+                  />
+                  <div className="property-photo-info">
+                    <h4 className="property-photo-title">Property Photo Attached</h4>
+                    <div className="property-photo-status">
+                      <span className="property-photo-status-dot"></span>
+                      <span>Ready to apply</span>
                     </div>
-
-                    <input
-                      type="file"
-                      ref={propertyImageFileRef}
-                      accept="image/*"
-                      onChange={handlePropertyImageChange}
-                      className="hidden"
-                    />
-
-                    {formData.image ? (
-                      <div className="flex items-center gap-4 bg-white border border-[#E2E8F0] rounded-xl p-3.5 shadow-xs">
-                        <img
-                          src={formData.image}
-                          alt="Property Preview"
-                          className="w-[96px] h-[96px] rounded-xl object-cover border border-[#E2E8F0] shadow-xs flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0 flex flex-col justify-center">
-                          <div className="text-sm font-bold text-[#0F172A] truncate">Property Photo Attached</div>
-                          <div className="text-xs text-[#10B981] font-semibold flex items-center gap-1.5 mt-1">
-                            <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                            <span>Ready to apply</span>
-                          </div>
-                          <div className="flex items-center gap-3 mt-3">
-                            <button
-                              type="button"
-                              onClick={() => propertyImageFileRef.current?.click()}
-                              className="h-9 px-3.5 text-xs font-bold text-[#6C3BFF] bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
-                            >
-                              <Upload className="w-3.5 h-3.5" />
-                              Change Photo
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setFormData((prev: any) => ({ ...prev, image: '' }))}
-                              className="h-9 px-3 text-xs font-bold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-colors cursor-pointer"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div
+                    <div className="property-photo-actions">
+                      <button
+                        type="button"
                         onClick={() => propertyImageFileRef.current?.click()}
-                        className="border-2 border-dashed border-[#DDD6FE] hover:border-[#6C3BFF] bg-white hover:bg-purple-50/40 rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="btn-change-photo"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-purple-50 text-[#6C3BFF] group-hover:scale-105 transition-transform flex items-center justify-center border border-purple-100 shadow-2xs">
-                          <Camera className="w-5 h-5" />
-                        </div>
-                        <div className="text-sm font-bold text-[#0F172A]">Click to choose PG photo from your device</div>
-                        <div className="text-xs text-[#64748B]">PNG, JPG or WebP (Max 5MB)</div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2-Column Form Fields Layout */}
-                  <div className="space-y-4 sm:space-y-5 pt-1">
-                    {/* Row 1: Property Name (Full Width) */}
-                    <div>
-                      <label className="block text-sm font-semibold text-[#1E293B] mb-2">
-                        Property Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. vkpg"
-                        value={formData.name || ''}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full h-[52px] px-4 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] outline-none transition-all placeholder:text-slate-400"
-                      />
-                    </div>
-
-                    {/* Row 2: Full Address of PG (Full Width) */}
-                    <div>
-                      <label className="block text-sm font-semibold text-[#1E293B] mb-2 flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-[#6C3BFF]" />
-                        <span>Full Address of PG</span>
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        rows={2}
-                        required
-                        placeholder="e.g. 14/2, Anna Nagar Main Road, Near New Bus Stand, Erode - 638001"
-                        value={formData.address || ''}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="w-full px-4 py-3 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] resize-none outline-none transition-all leading-relaxed placeholder:text-slate-400"
-                      />
-                    </div>
-
-                    {/* Row 3: City / Location & Gender Accommodation */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                      <div>
-                        <label className="block text-sm font-semibold text-[#1E293B] mb-2">
-                          City / Location <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Erode"
-                          value={formData.city || formData.location || ''}
-                          onChange={(e) => setFormData({ ...formData, city: e.target.value, location: e.target.value })}
-                          className="w-full h-[52px] px-4 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] outline-none transition-all placeholder:text-slate-400"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-[#1E293B] mb-2">
-                          Gender Accommodation
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={formData.gender || 'Boys'}
-                            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                            className="w-full h-[52px] px-4 pr-10 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] outline-none appearance-none cursor-pointer transition-all"
-                          >
-                            <option value="Boys">Boys</option>
-                            <option value="Girls">Girls</option>
-                            <option value="Co-living">Co-living</option>
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Row 4: Total Bed Capacity & Total Floors */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                      <div>
-                        <label className="block text-sm font-semibold text-[#1E293B] mb-2">
-                          Total Bed Capacity
-                        </label>
-                        <input
-                          type="number"
-                          min="1"
-                          placeholder="e.g. 30"
-                          value={formData.totalBeds !== undefined && formData.totalBeds !== null ? formData.totalBeds : ''}
-                          onChange={(e) => setFormData({ ...formData, totalBeds: e.target.value === '' ? '' : parseInt(e.target.value, 10) })}
-                          className="w-full h-[52px] px-4 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] outline-none transition-all placeholder:text-slate-400"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-[#1E293B] mb-2">
-                          Total Floors
-                        </label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="50"
-                          placeholder="e.g. 4"
-                          value={formData.totalFloors !== undefined && formData.totalFloors !== null ? formData.totalFloors : ''}
-                          onChange={(e) => setFormData({ ...formData, totalFloors: e.target.value === '' ? '' : parseInt(e.target.value, 10) })}
-                          className="w-full h-[52px] px-4 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#6C3BFF] focus:ring-2 focus:ring-[#6C3BFF]/20 rounded-xl text-sm font-medium text-[#0F172A] outline-none transition-all placeholder:text-slate-400"
-                        />
-                      </div>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Change Photo</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev: any) => ({ ...prev, image: '' }))}
+                        className="btn-remove-photo"
+                      >
+                        <span>Remove</span>
+                      </button>
                     </div>
                   </div>
-                </>
+                </div>
+              ) : (
+                <div
+                  onClick={() => propertyImageFileRef.current?.click()}
+                  className="property-photo-empty"
+                >
+                  <div className="photo-empty-icon-sq">
+                    <Camera className="w-5 h-5" />
+                  </div>
+                  <div className="photo-empty-title">Click to choose PG photo from your device</div>
+                  <div className="photo-empty-hint">PNG, JPG or WebP (Max 5MB)</div>
+                </div>
               )}
 
+              {/* Property Form */}
+              <div className="property-form">
+                {/* Row 1: Property Name */}
+                <div className="property-name form-field-group">
+                  <label className="form-field-label">
+                    Property Name <span className="required-star">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. vkpg"
+                    value={formData.name || ''}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="form-field-input"
+                  />
+                </div>
+
+                {/* Row 2: Full Address of PG */}
+                <div className="property-address form-field-group">
+                  <label className="form-field-label">
+                    <MapPin className="w-4 h-4 text-[#6C3BFF] inline-block mr-1" />
+                    <span>Full Address of PG</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    required
+                    placeholder="e.g. 14/2, Anna Nagar Main Road, Near New Bus Stand, Erode - 638001"
+                    value={formData.address || ''}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    className="form-field-textarea"
+                  />
+                </div>
+
+                {/* Row 3: City / Location + Gender Accommodation */}
+                <div className="city-and-gender">
+                  <div className="form-field-group">
+                    <label className="form-field-label">
+                      City / Location <span className="required-star">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Erode"
+                      value={formData.city || formData.location || ''}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value, location: e.target.value })}
+                      className="form-field-input"
+                    />
+                  </div>
+                  <div className="form-field-group">
+                    <label className="form-field-label">
+                      Gender Accommodation
+                    </label>
+                    <div className="select-wrapper">
+                      <select
+                        value={formData.gender || 'Boys'}
+                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                        className="form-field-select"
+                      >
+                        <option value="Boys">Boys</option>
+                        <option value="Girls">Girls</option>
+                        <option value="Co-living">Co-living</option>
+                      </select>
+                      <ChevronDown className="select-chevron" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 4: Total Bed Capacity + Total Floors */}
+                <div className="capacity-and-floors">
+                  <div className="form-field-group">
+                    <label className="form-field-label">
+                      Total Bed Capacity
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="e.g. 30"
+                      value={formData.totalBeds !== undefined && formData.totalBeds !== null ? formData.totalBeds : ''}
+                      onChange={(e) => setFormData({ ...formData, totalBeds: e.target.value === '' ? '' : parseInt(e.target.value, 10) })}
+                      className="form-field-input"
+                    />
+                  </div>
+                  <div className="form-field-group">
+                    <label className="form-field-label">
+                      Total Floors
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="50"
+                      placeholder="e.g. 4"
+                      value={formData.totalFloors !== undefined && formData.totalFloors !== null ? formData.totalFloors : ''}
+                      onChange={(e) => setFormData({ ...formData, totalFloors: e.target.value === '' ? '' : parseInt(e.target.value, 10) })}
+                      className="form-field-input"
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            {/* Modal Footer */}
+            <div className="modal-footer">
+              <button
+                type="button"
+                onClick={() => { setModalType(null); setEditingItem(null); }}
+                className="btn-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="editPropertyForm"
+                className="btn-save"
+              >
+                {editingItem ? 'Save Changes' : 'Create Property'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* OTHER GLOBAL REUSABLE MODALS (Warden, Tenant, Room, etc.) */}
+      {/* ========================================================= */}
+      {modalType && modalType !== 'property' && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col my-auto max-h-[92vh]">
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#0F172A] capitalize">
+                {editingItem ? `Edit ${modalType}` : `Add New ${modalType}`}
+              </h3>
+              <button 
+                onClick={() => { setModalType(null); setEditingItem(null); }}
+                className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleModalSubmit} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
               {(modalType === 'warden' || modalType === 'accountant') && (
                 <>
                   <div>
@@ -4511,39 +4525,21 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               )}
 
               {/* Form Actions */}
-              {modalType === 'property' ? (
-                <div className="grid grid-cols-2 gap-4 w-full pt-6 mt-4 border-t border-slate-100 bg-white sticky bottom-0 z-10 pb-1">
-                  <button
-                    type="button"
-                    onClick={() => { setModalType(null); setEditingItem(null); }}
-                    className="h-[56px] w-full bg-white border-2 border-[#6C3BFF] text-[#6C3BFF] hover:bg-purple-50/60 rounded-xl font-bold text-base transition-all cursor-pointer flex items-center justify-center shadow-xs"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="h-[56px] w-full bg-[#6C3BFF] hover:bg-[#5B2FD8] text-white rounded-xl font-bold text-base shadow-lg shadow-purple-500/25 transition-all cursor-pointer flex items-center justify-center"
-                  >
-                    {editingItem ? 'Save Changes' : 'Create Property'}
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F1F5F9]">
-                  <button
-                    type="button"
-                    onClick={() => { setModalType(null); setEditingItem(null); }}
-                    className="px-4 py-2 border border-[#E2E8F0] rounded-xl font-bold text-[#64748B] hover:bg-[#F8FAFC]"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl font-bold shadow-md shadow-indigo-100"
-                  >
-                    {editingItem ? 'Save Changes' : 'Create Record'}
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F1F5F9]">
+                <button
+                  type="button"
+                  onClick={() => { setModalType(null); setEditingItem(null); }}
+                  className="px-4 py-2 border border-[#E2E8F0] rounded-xl font-bold text-[#64748B] hover:bg-[#F8FAFC]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-xl font-bold shadow-md shadow-indigo-100"
+                >
+                  {editingItem ? 'Save Changes' : 'Create Record'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
