@@ -39,7 +39,8 @@ import {
   EyeOff,
   Upload,
   Camera,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Cloud
 } from 'lucide-react';
 import { api } from '../../services/api';
 import './StayNestOwnerPortal.css';
@@ -649,51 +650,100 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
   return (
     <div className="sn-portal-container flex h-screen bg-[#F6F7FB] text-[#1E293B] font-sans antialiased overflow-hidden">
       {/* ========================================================= */}
-      {/* PERSISTENT LEFT SIDEBAR (Exact Match to Reference Design) */}
+      {/* PERSISTENT LEFT SIDEBAR (Redesigned to Match Image 1)     */}
       {/* ========================================================= */}
       <aside className={`sn-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="flex flex-col flex-1 min-h-0">
-          {/* Top Brand Header Card (Matching Image 1 & Image 3) */}
-          <div className="sn-brand-card-container">
-            {!isSidebarCollapsed ? (
-              <div className="sn-brand-card">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="sn-brand-logo-sq">
-                    <Building2 className="w-5 h-5 text-[#7C3AED]" />
+          {/* Top Brand Header Banner (Matching Image 1) */}
+          {!isSidebarCollapsed ? (
+            <div className="sn-header-banner relative overflow-hidden shrink-0">
+              {/* Top-left green foliage / leaves illustration */}
+              <svg 
+                className="absolute -top-1 -left-1 w-24 h-20 pointer-events-none z-10 opacity-90" 
+                viewBox="0 0 90 70" 
+                fill="none"
+              >
+                <path d="M0,0 C22,10 38,26 40,46 C26,38 14,35 0,38 Z" fill="#22C55E"/>
+                <path d="M6,0 C32,9 48,22 55,40 C40,33 24,30 9,34 Z" fill="#16A34A" opacity="0.9"/>
+                <path d="M18,0 C44,16 60,32 67,52 C52,43 35,41 20,45 Z" fill="#15803D" opacity="0.85"/>
+                <path d="M32,0 C58,13 74,26 82,44 C67,37 50,35 36,39 Z" fill="#166534" opacity="0.75"/>
+                <path d="M0,18 C16,24 28,37 30,55 C19,47 9,44 0,46 Z" fill="#4ADE80" opacity="0.85"/>
+              </svg>
+
+              {/* Night building photo / illustration at top-right */}
+              <div className="absolute right-0 top-0 bottom-0 w-36 pointer-events-none overflow-hidden">
+                <img 
+                  src="/staynest_header_building.jpg" 
+                  alt="StayNest PG Building"
+                  className="w-full h-full object-cover object-left-top mix-blend-lighten opacity-95 filter contrast-110"
+                  style={{
+                    maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 25%, black 80%)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.6) 25%, black 80%)'
+                  }}
+                />
+              </div>
+
+              {/* Header Content */}
+              <div className="relative z-10 px-4 pt-6 pb-5 flex items-start justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {/* StayNest Logo: House with Bed */}
+                  <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg shrink-0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                      <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/>
+                      <path d="M7 16h10"/>
+                      <path d="M7 13h4a2 2 0 0 1 2 2v1H7v-3z"/>
+                    </svg>
                   </div>
+
                   <div className="min-w-0">
-                    <h1 className="sn-brand-title-text font-black tracking-tight text-[#0F172A]">STAYNEST</h1>
-                    <div className="sn-brand-sub-badge">
-                      <span className="sn-live-dot"></span>
-                      <span>PG OWNER PORTAL</span>
-                    </div>
+                    <h1 className="text-lg font-extrabold tracking-tight text-white leading-tight">
+                      Stay<span className="text-[#D8B4FE]">Nest</span>
+                    </h1>
+                    <p className="text-[10.5px] font-semibold text-[#DDD6FE] tracking-wide mt-0.5 truncate">
+                      PG Owner Portal
+                    </p>
                   </div>
                 </div>
+
+                {/* Collapse Button */}
                 <button
                   onClick={toggleSidebar}
                   title="Collapse sidebar"
-                  className="w-7 h-7 rounded-lg text-slate-400 hover:text-[#7C3AED] hover:bg-purple-100/50 flex items-center justify-center transition-all cursor-pointer ml-1 shrink-0"
+                  className="w-7 h-7 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white/80 hover:text-white flex items-center justify-center transition-all cursor-pointer shrink-0 mt-0.5 ml-1"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
               </div>
-            ) : (
+
+              {/* Organic Wavy Bottom Divider */}
+              <svg 
+                className="absolute -bottom-[1px] left-0 right-0 w-full h-5 pointer-events-none text-[#F8F9FE] fill-current" 
+                viewBox="0 0 320 20" 
+                preserveAspectRatio="none"
+              >
+                <path d="M0,0 C90,22 180,24 245,10 C280,2 300,5 320,8 L320,20 L0,20 Z" />
+              </svg>
+            </div>
+          ) : (
+            <div className="p-3 flex justify-center shrink-0">
               <button
                 onClick={toggleSidebar}
                 title="Expand sidebar"
-                className="sn-brand-card group relative"
+                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#581C87] text-white flex items-center justify-center shadow-md hover:scale-105 transition-transform relative group cursor-pointer"
               >
-                <div className="sn-brand-logo-sq">
-                  <Building2 className="w-5 h-5 text-[#7C3AED] group-hover:scale-95 transition-transform" />
-                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                  <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9z"/>
+                  <path d="M7 16h10"/>
+                  <path d="M7 13h4a2 2 0 0 1 2 2v1H7v-3z"/>
+                </svg>
                 <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-white border border-[#EDE7FD] shadow-xs flex items-center justify-center text-[#7C3AED]">
                   <ChevronRight className="w-2.5 h-2.5" />
                 </span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Navigation Sections (Categorized like Image 1, collapsing to Image 3) */}
+          {/* Navigation Sections (Categorized exactly as in Image 1) */}
           <nav className="sn-nav-list flex-1">
             {[
               {
@@ -702,13 +752,13 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
                 items: [
                   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                   { id: 'properties', label: 'Properties', icon: Building2 },
-                  { id: 'staff', label: 'Staff Management', icon: Users },
                 ]
               },
               {
                 id: 'residents',
                 title: 'RESIDENTS & ROOMS',
                 items: [
+                  { id: 'staff', label: 'Staff Management', icon: Users },
                   { id: 'tenants', label: 'Tenants', icon: UserCheck },
                   { id: 'rooms', label: 'Rooms & Beds', icon: BedIcon },
                 ]
@@ -734,82 +784,114 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               }
             ].map((section, secIdx) => (
               <div key={section.id} className="w-full">
-                {/* Section title when expanded, thin horizontal line when collapsed (Image 3) */}
+                {/* Section title when expanded, thin horizontal line when collapsed */}
                 {!isSidebarCollapsed ? (
-                  <div className="sn-nav-section-title">
-                    {section.title}
+                  <div className="sn-nav-section-title-wrap">
+                    <span className="w-5 h-1 rounded-full bg-[#8B5CF6] shrink-0" />
+                    <span className="text-[11px] font-extrabold tracking-wider text-[#1E1B4B] uppercase">
+                      {section.title}
+                    </span>
                   </div>
                 ) : secIdx > 0 ? (
                   <div className="sn-nav-section-divider" />
                 ) : null}
 
                 {/* Section Items */}
-                <div className="space-y-1">
-                  {section.items.map(item => {
-                    const Icon = item.icon;
-                    const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
+                {!isSidebarCollapsed ? (
+                  <div className="space-y-1.5">
+                    {section.items.map(item => {
+                      const Icon = item.icon;
+                      const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
 
-                    return (
-                      <button
-                        key={item.id}
-                        title={item.label}
-                        onClick={() => {
-                          setActiveTab(item.id as TabType);
-                          setSearchQuery('');
-                          setStatusFilter('all');
-                        }}
-                        className={`sn-nav-btn ${isActive ? 'active' : ''} group`}
-                      >
-                        {/* Solid purple vertical active bar on the left (Image 1 & 3) */}
-                        {isActive && <div className="sn-active-bar" />}
+                      return (
+                        <button
+                          key={item.id}
+                          title={item.label}
+                          onClick={() => {
+                            setActiveTab(item.id as TabType);
+                            setSearchQuery('');
+                            setStatusFilter('all');
+                          }}
+                          className={`sn-nav-card ${isActive ? 'active' : ''} group`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Squircle Icon Container */}
+                            <div className={`sn-nav-icon-sq ${isActive ? 'active' : ''}`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
 
-                        {/* Squircle Icon Container */}
-                        <div className="sn-icon-sq-wrap relative">
-                          <div className="sn-icon-sq">
-                            <Icon className="w-4 h-4" />
+                            <span className={`sn-nav-card-label ${isActive ? 'active' : ''}`}>
+                              {item.label}
+                            </span>
                           </div>
 
-                          {/* Collapsed dot or badge positioning (Image 3) */}
-                          {isSidebarCollapsed && item.hasGreenDot && (
-                            <span className="sn-green-dot" />
-                          )}
-                          {isSidebarCollapsed && item.badge !== undefined && (
-                            <span className="sn-item-badge">
-                              {item.badge}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Label & Badges when expanded (Image 1) */}
-                        {!isSidebarCollapsed && (
-                          <>
-                            <span className="sn-item-label font-semibold">{item.label}</span>
-                            {item.hasGreenDot && <span className="sn-green-dot" />}
+                          {/* Right Chevron & Badges */}
+                          <div className="flex items-center gap-2 shrink-0">
+                            {item.hasGreenDot && (
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-xs shrink-0" />
+                            )}
                             {item.badge !== undefined && (
-                              <span className="sn-item-badge">
+                              <span className={`px-2 py-0.5 text-[10px] font-extrabold rounded-full ${
+                                isActive ? 'bg-white/20 text-white' : 'bg-[#EDE7FD] text-[#7C3AED]'
+                              }`}>
                                 {item.badge}
                               </span>
                             )}
-                          </>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                            <ChevronRight className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="space-y-2 flex flex-col items-center">
+                    {section.items.map(item => {
+                      const Icon = item.icon;
+                      const isActive = item.id === 'reports' ? (activeTab === 'reports' || activeTab === 'settings') : activeTab === item.id;
+
+                      return (
+                        <button
+                          key={item.id}
+                          title={item.label}
+                          onClick={() => {
+                            setActiveTab(item.id as TabType);
+                            setSearchQuery('');
+                            setStatusFilter('all');
+                          }}
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center relative transition-all cursor-pointer ${
+                            isActive 
+                              ? 'bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-white shadow-md' 
+                              : 'bg-white hover:bg-[#F5F3FF] text-[#7C3AED] border border-[#ECE7FE] shadow-2xs'
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                          {item.hasGreenDot && (
+                            <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#10B981] ring-2 ring-white" />
+                          )}
+                          {item.badge !== undefined && (
+                            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-[#7C3AED] text-white text-[9px] font-extrabold flex items-center justify-center">
+                              {item.badge}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
           </nav>
         </div>
 
-        {/* Bottom Profile Card & Footer (Exact Match to Image 1 & Image 3) */}
-        <div className="sn-sidebar-bottom">
+        {/* Bottom Profile Card & Footer (Exact Match to Image 1) */}
+        <div className="sn-sidebar-bottom-modern">
           {/* Back to Public Website */}
           {onNavigateLanding && !isSidebarCollapsed && (
             <button
               onClick={onNavigateLanding}
-              className="sn-back-btn"
+              className="sn-back-website-btn"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-4 h-4" />
               <span>Back to Public Website</span>
             </button>
           )}
@@ -826,12 +908,12 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
           {/* Profile Card */}
           {!isSidebarCollapsed ? (
-            <div className="sn-profile-card">
+            <div className="sn-profile-card-modern">
               <div className="flex items-center gap-2.5 min-w-0">
-                {/* Purple Avatar Squircle with Green Online Dot */}
-                <div className="sn-profile-avatar-sq">
+                {/* Purple Avatar with Online Dot */}
+                <div className="sn-profile-avatar-circle">
                   {ownerInitials}
-                  <span className="sn-profile-online-dot"></span>
+                  <span className="sn-profile-online-badge"></span>
                 </div>
                 {/* Name & Subtitle */}
                 <div className="min-w-0 text-left">
@@ -856,17 +938,15 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
               )}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2.5">
-              {/* Collapsed Avatar with Online Dot (Image 3) */}
+            <div className="flex flex-col items-center gap-2">
               <div 
-                className="sn-profile-avatar-sq cursor-pointer"
+                className="sn-profile-avatar-circle cursor-pointer"
                 title={`${ownerName} • ${ownerSubtitle}`}
               >
                 {ownerInitials}
-                <span className="sn-profile-online-dot"></span>
+                <span className="sn-profile-online-badge"></span>
               </div>
 
-              {/* Collapsed Logout Button (Image 3) */}
               {onLogout && (
                 <button
                   onClick={onLogout}
@@ -881,9 +961,21 @@ export const StayNestOwnerPortal: React.FC<StayNestOwnerPortalProps> = ({ curren
 
           {/* Version Footer */}
           {!isSidebarCollapsed && (
-            <div className="text-center text-[11px] font-semibold text-slate-400 pt-0.5">
-              StayNest Cloud • v2.4
+            <div className="flex items-center justify-center gap-1.5 text-center text-[11px] font-semibold text-slate-400 pt-0.5">
+              <Cloud className="w-3.5 h-3.5 text-slate-400" />
+              <span>StayNest Cloud • v2.4</span>
             </div>
+          )}
+
+          {/* Bottom subtle purple decorative wave */}
+          {!isSidebarCollapsed && (
+            <svg 
+              className="w-full h-3 text-purple-200/50 fill-current mt-0.5" 
+              viewBox="0 0 280 12" 
+              preserveAspectRatio="none"
+            >
+              <path d="M0,8 C70,2 160,14 280,6 L280,12 L0,12 Z" />
+            </svg>
           )}
         </div>
       </aside>
